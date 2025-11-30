@@ -126,4 +126,70 @@
         </div>
     </div>
 </div>
+
+<!-- Contoh Dokumen -->
+@if($contohDokumen->count() > 0)
+<div class="card mt-4">
+    <div class="card-header bg-transparent border-0 pt-4 pb-0 px-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="card-title mb-1"><i class="bi bi-file-earmark-arrow-down me-2 text-primary"></i>Contoh Dokumen</h5>
+                <p class="text-muted small mb-0">Download template/contoh dokumen sebagai referensi pengajuan</p>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th style="width: 40px;">No.</th>
+                        <th>Dokumen</th>
+                        <th>Keterangan</th>
+                        <th class="text-center">Dilihat</th>
+                        <th class="text-center">Diunduh</th>
+                        <th class="text-center">Unduh</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($contohDokumen as $index => $dokumen)
+                    <tr>
+                        <td>{{ $index + 1 }}.</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                @php
+                                    $ext = pathinfo($dokumen->file_name, PATHINFO_EXTENSION);
+                                    $iconClass = match(strtolower($ext)) {
+                                        'pdf' => 'bi-file-earmark-pdf text-danger',
+                                        'doc', 'docx' => 'bi-file-earmark-word text-primary',
+                                        'xls', 'xlsx' => 'bi-file-earmark-excel text-success',
+                                        default => 'bi-file-earmark text-secondary'
+                                    };
+                                @endphp
+                                <i class="bi {{ $iconClass }} me-2" style="font-size: 20px;"></i>
+                                <span class="fw-semibold">{{ $dokumen->nama }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <small class="text-muted">{{ $dokumen->keterangan ?? '-' }}</small>
+                        </td>
+                        <td class="text-center">
+                            <small class="text-muted"><i class="bi bi-eye me-1"></i>{{ number_format($dokumen->jumlah_dilihat) }}</small>
+                        </td>
+                        <td class="text-center">
+                            <small class="text-muted"><i class="bi bi-download me-1"></i>{{ number_format($dokumen->jumlah_diunduh) }}</small>
+                        </td>
+                        <td class="text-center">
+                            <a href="{{ route('user.contoh-dokumen.download', $dokumen->id) }}" class="btn btn-sm btn-success" title="Download">
+                                <i class="bi bi-download"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@endif
 @endsection

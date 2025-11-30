@@ -20,6 +20,9 @@
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
+    <!-- SweetAlert2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+
     <style>
         :root {
             --primary-color: #2563eb;
@@ -639,6 +642,12 @@
             <div class="menu-label">Dokumen</div>
             <ul class="nav flex-column">
                 <li class="nav-item">
+                    <a href="{{ route('admin.contoh-dokumen.index') }}" class="nav-link {{ request()->routeIs('admin.contoh-dokumen.*') ? 'active' : '' }}">
+                        <i class="bi bi-file-earmark-arrow-down"></i>
+                        <span>Contoh Dokumen</span>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="#" class="nav-link {{ request()->routeIs('admin.kontrak.*') ? 'active' : '' }}">
                         <i class="bi bi-file-earmark-text"></i>
                         <span>Kontrak</span>
@@ -739,26 +748,15 @@
 
         <!-- Content -->
         <div class="content-wrapper">
-            @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
-
-            @if(session('error'))
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    {{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
-
             @yield('content')
         </div>
     </main>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         // Sidebar Toggle
@@ -775,6 +773,105 @@
             sidebar.classList.remove('active');
             sidebarOverlay.classList.remove('active');
         });
+
+        // SweetAlert2 Notifications
+        @if(session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ session('success') }}',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            toast: true,
+            position: 'top-end'
+        });
+        @endif
+
+        @if(session('error'))
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal!',
+            text: '{{ session('error') }}',
+            showConfirmButton: true,
+            confirmButtonColor: '#ef4444'
+        });
+        @endif
+
+        @if(session('warning'))
+        Swal.fire({
+            icon: 'warning',
+            title: 'Perhatian!',
+            text: '{{ session('warning') }}',
+            showConfirmButton: true,
+            confirmButtonColor: '#f59e0b'
+        });
+        @endif
+
+        @if(session('info'))
+        Swal.fire({
+            icon: 'info',
+            title: 'Informasi',
+            text: '{{ session('info') }}',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            toast: true,
+            position: 'top-end'
+        });
+        @endif
+
+        // Custom Confirm Delete Function
+        function confirmDelete(formId, title = 'Hapus Data?', text = 'Data yang dihapus tidak dapat dikembalikan!') {
+            Swal.fire({
+                title: title,
+                text: text,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: '<i class="bi bi-trash me-1"></i> Ya, Hapus!',
+                cancelButtonText: '<i class="bi bi-x me-1"></i> Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(formId).submit();
+                }
+            });
+        }
+
+        // Custom Confirm Action Function
+        function confirmAction(formId, title, text, icon = 'question', confirmText = 'Ya, Lanjutkan', confirmColor = '#2563eb') {
+            Swal.fire({
+                title: title,
+                text: text,
+                icon: icon,
+                showCancelButton: true,
+                confirmButtonColor: confirmColor,
+                cancelButtonColor: '#64748b',
+                confirmButtonText: confirmText,
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(formId).submit();
+                }
+            });
+        }
+
+        // Toast notification function
+        function showToast(icon, title, text = '') {
+            Swal.fire({
+                icon: icon,
+                title: title,
+                text: text,
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                toast: true,
+                position: 'top-end'
+            });
+        }
     </script>
     @stack('scripts')
 </body>

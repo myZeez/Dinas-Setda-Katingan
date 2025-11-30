@@ -521,25 +521,48 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Reset positions button
     document.getElementById('resetPositions').addEventListener('click', function() {
-        if (confirm('Reset semua posisi ke urutan default (1-15)?')) {
-            const cards = Array.from(document.querySelectorAll('.pemimpin-card'));
+        Swal.fire({
+            title: 'Reset Posisi?',
+            text: 'Semua posisi akan dikembalikan ke urutan default (1-15)',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#2563eb',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Ya, Reset',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const cards = Array.from(document.querySelectorAll('.pemimpin-card'));
 
-            cards.forEach((card, index) => {
-                const slot = slots[index];
-                if (slot) {
-                    slot.appendChild(card);
-                }
-            });
+                cards.forEach((card, index) => {
+                    const slot = slots[index];
+                    if (slot) {
+                        slot.appendChild(card);
+                    }
+                });
 
-            savePositions();
-        }
+                savePositions();
+            }
+        });
     });
 });
 
 function confirmDelete(id) {
-    if (confirm('Apakah Anda yakin ingin menghapus pemimpin daerah ini?')) {
-        document.getElementById('delete-form-' + id).submit();
-    }
+    Swal.fire({
+        title: 'Hapus Pemimpin Daerah?',
+        text: 'Data pemimpin daerah ini akan dihapus permanen!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: '<i class="bi bi-trash me-1"></i> Ya, Hapus!',
+        cancelButtonText: 'Batal',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('delete-form-' + id).submit();
+        }
+    });
 }
 </script>
 @endpush

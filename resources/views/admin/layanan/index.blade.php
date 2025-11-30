@@ -33,8 +33,8 @@
                         <i class="bi bi-hourglass-split"></i>
                     </div>
                     <div>
-                        <h3 class="stat-number mb-0">{{ $stats['diajukan'] }}</h3>
-                        <p class="stat-label mb-0">Menunggu Proses</p>
+                        <h3 class="stat-number mb-0">{{ $stats['menunggu_review_sp'] ?? 0 }}</h3>
+                        <p class="stat-label mb-0">Menunggu Review SP</p>
                     </div>
                 </div>
             </div>
@@ -44,12 +44,12 @@
         <div class="card stat-card">
             <div class="card-body">
                 <div class="d-flex align-items-center">
-                    <div class="stat-icon purple me-3">
-                        <i class="bi bi-gear"></i>
+                    <div class="stat-icon cyan me-3">
+                        <i class="bi bi-check2-circle"></i>
                     </div>
                     <div>
-                        <h3 class="stat-number mb-0">{{ $stats['diproses'] }}</h3>
-                        <p class="stat-label mb-0">Sedang Diproses</p>
+                        <h3 class="stat-number mb-0">{{ $stats['sp_disetujui'] ?? 0 }}</h3>
+                        <p class="stat-label mb-0">SP Disetujui</p>
                     </div>
                 </div>
             </div>
@@ -63,8 +63,8 @@
                         <i class="bi bi-exclamation-triangle"></i>
                     </div>
                     <div>
-                        <h3 class="stat-number mb-0">{{ $stats['koreksi'] }}</h3>
-                        <p class="stat-label mb-0">Perlu Koreksi</p>
+                        <h3 class="stat-number mb-0">{{ $stats['sp_revisi'] ?? 0 }}</h3>
+                        <p class="stat-label mb-0">SP Perlu Revisi</p>
                     </div>
                 </div>
             </div>
@@ -77,12 +77,12 @@
         <div class="card stat-card">
             <div class="card-body">
                 <div class="d-flex align-items-center">
-                    <div class="stat-icon cyan me-3">
-                        <i class="bi bi-pen"></i>
+                    <div class="stat-icon teal me-3">
+                        <i class="bi bi-files"></i>
                     </div>
                     <div>
-                        <h3 class="stat-number mb-0">{{ $stats['proses_ttd'] }}</h3>
-                        <p class="stat-label mb-0">Proses TTD</p>
+                        <h3 class="stat-number mb-0">{{ $stats['dokumen_lengkap'] ?? 0 }}</h3>
+                        <p class="stat-label mb-0">Dokumen Lengkap</p>
                     </div>
                 </div>
             </div>
@@ -92,12 +92,12 @@
         <div class="card stat-card">
             <div class="card-body">
                 <div class="d-flex align-items-center">
-                    <div class="stat-icon teal me-3">
-                        <i class="bi bi-calendar-check"></i>
+                    <div class="stat-icon purple me-3">
+                        <i class="bi bi-gear"></i>
                     </div>
                     <div>
-                        <h3 class="stat-number mb-0">{{ $stats['penjadwalan_ttd'] }}</h3>
-                        <p class="stat-label mb-0">Penjadwalan TTD</p>
+                        <h3 class="stat-number mb-0">{{ $stats['diproses'] ?? 0 }}</h3>
+                        <p class="stat-label mb-0">Sedang Diproses</p>
                     </div>
                 </div>
             </div>
@@ -111,7 +111,7 @@
                         <i class="bi bi-check-circle"></i>
                     </div>
                     <div>
-                        <h3 class="stat-number mb-0">{{ $stats['selesai'] }}</h3>
+                        <h3 class="stat-number mb-0">{{ $stats['selesai'] ?? 0 }}</h3>
                         <p class="stat-label mb-0">Selesai</p>
                     </div>
                 </div>
@@ -126,7 +126,7 @@
                         <i class="bi bi-x-circle"></i>
                     </div>
                     <div>
-                        <h3 class="stat-number mb-0">{{ $stats['ditolak'] }}</h3>
+                        <h3 class="stat-number mb-0">{{ $stats['ditolak'] ?? 0 }}</h3>
                         <p class="stat-label mb-0">Ditolak</p>
                     </div>
                 </div>
@@ -154,7 +154,7 @@
         </a>
     </div>
     <div class="col-md-6 col-lg-4">
-        <a href="{{ route('admin.layanan.pengajuan', ['status' => 'diajukan']) }}" class="card text-decoration-none h-100">
+        <a href="{{ route('admin.layanan.pengajuan', ['status' => 'menunggu_review_sp']) }}" class="card text-decoration-none h-100">
             <div class="card-body p-4">
                 <div class="d-flex align-items-center">
                     <div class="stat-icon yellow me-3">
@@ -162,7 +162,7 @@
                     </div>
                     <div>
                         <h6 class="mb-1 text-dark">Pengajuan Baru</h6>
-                        <small class="text-muted">{{ $stats['diajukan'] }} pengajuan menunggu</small>
+                        <small class="text-muted">{{ $stats['menunggu_review_sp'] ?? 0 }} pengajuan menunggu review</small>
                     </div>
                     <i class="bi bi-chevron-right ms-auto text-muted"></i>
                 </div>

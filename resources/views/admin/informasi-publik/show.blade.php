@@ -139,35 +139,15 @@
                     <a href="{{ route('admin.informasi-publik.edit', [$kategori->slug, $informasi->id]) }}" class="btn btn-primary">
                         <i class="bi bi-pencil me-1"></i> Edit Dokumen
                     </a>
-                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                    <button type="button" class="btn btn-danger"
+                        onclick="confirmDelete('delete-dokumen-form', 'Hapus Dokumen?', 'Dokumen ini akan dihapus permanen!')">
                         <i class="bi bi-trash me-1"></i> Hapus Dokumen
                     </button>
+                    <form id="delete-dokumen-form" action="{{ route('admin.informasi-publik.destroy', [$kategori->slug, $informasi->id]) }}" method="POST" class="d-none">
+                        @csrf
+                        @method('DELETE')
+                    </form>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Delete Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Hapus Dokumen</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p>Apakah Anda yakin ingin menghapus dokumen:</p>
-                <p class="fw-semibold">"{{ $informasi->judul }}"</p>
-                <p class="text-danger small mb-0">Tindakan ini tidak dapat dibatalkan.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <form action="{{ route('admin.informasi-publik.destroy', [$kategori->slug, $informasi->id]) }}" method="POST" class="d-inline">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger">Hapus</button>
-                </form>
             </div>
         </div>
     </div>

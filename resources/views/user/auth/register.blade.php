@@ -17,6 +17,9 @@
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         :root {
             --primary-color: #16a34a;
@@ -355,5 +358,35 @@
             </a>
         </div>
     </div>
+
+    <script>
+        // SweetAlert for session messages
+        @if(session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ session('success') }}',
+            confirmButtonColor: '#16a34a'
+        });
+        @endif
+
+        @if(session('error'))
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal!',
+            text: '{{ session('error') }}',
+            confirmButtonColor: '#ef4444'
+        });
+        @endif
+
+        @if($errors->any())
+        Swal.fire({
+            icon: 'error',
+            title: 'Pendaftaran Gagal!',
+            html: `@foreach($errors->all() as $error)<p class="mb-1">{{ $error }}</p>@endforeach`,
+            confirmButtonColor: '#ef4444'
+        });
+        @endif
+    </script>
 </body>
 </html>

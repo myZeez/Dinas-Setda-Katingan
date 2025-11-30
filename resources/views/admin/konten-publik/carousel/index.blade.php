@@ -178,9 +178,21 @@
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script>
     function confirmDelete(id) {
-        if (confirm('Apakah Anda yakin ingin menghapus carousel ini?')) {
-            document.getElementById('delete-form-' + id).submit();
-        }
+        Swal.fire({
+            title: 'Hapus Carousel?',
+            text: 'Carousel ini akan dihapus permanen!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: '<i class="bi bi-trash me-1"></i> Ya, Hapus!',
+            cancelButtonText: 'Batal',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('delete-form-' + id).submit();
+            }
+        });
     }
 
     // Sortable for reordering

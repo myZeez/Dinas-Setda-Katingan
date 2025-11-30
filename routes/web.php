@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\KontenPublikController;
+use App\Http\Controllers\Admin\ContohDokumenController;
 use App\Http\Controllers\User\AuthController as UserAuthController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\User\LayananController;
@@ -46,6 +47,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/layanan/pengajuan', [AdminLayananController::class, 'pengajuan'])->name('layanan.pengajuan');
         Route::get('/layanan/pengajuan/{id}', [AdminLayananController::class, 'detail'])->name('layanan.detail');
         Route::put('/layanan/pengajuan/{id}/status', [AdminLayananController::class, 'updateStatus'])->name('layanan.update-status');
+        // SP Routes
+        Route::post('/layanan/pengajuan/{id}/approve-sp', [AdminLayananController::class, 'approveSuratPenawaran'])->name('layanan.approve-sp');
+        Route::post('/layanan/pengajuan/{id}/revisi-sp', [AdminLayananController::class, 'revisiSuratPenawaran'])->name('layanan.revisi-sp');
+        // KAK Routes
+        Route::post('/layanan/pengajuan/{id}/approve-kak', [AdminLayananController::class, 'approveKAK'])->name('layanan.approve-kak');
+        Route::post('/layanan/pengajuan/{id}/revisi-kak', [AdminLayananController::class, 'revisiKAK'])->name('layanan.revisi-kak');
+        // Other Layanan Routes
         Route::put('/layanan/pengajuan/{id}/dokumen/{dokumenId}', [AdminLayananController::class, 'updateDokumen'])->name('layanan.update-dokumen');
         Route::post('/layanan/pengajuan/{id}/upload-hasil', [AdminLayananController::class, 'uploadHasil'])->name('layanan.upload-hasil');
         Route::get('/layanan/pengajuan/{id}/dokumen/{dokumenId}/download', [AdminLayananController::class, 'downloadDokumen'])->name('layanan.download');
@@ -116,6 +124,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/konten-publik/pemimpin/{id}', [KontenPublikController::class, 'pemimpinUpdate'])->name('konten-publik.pemimpin.update');
         Route::delete('/konten-publik/pemimpin/{id}', [KontenPublikController::class, 'pemimpinDestroy'])->name('konten-publik.pemimpin.destroy');
 
+        // Contoh Dokumen
+        Route::get('/contoh-dokumen', [ContohDokumenController::class, 'index'])->name('contoh-dokumen.index');
+        Route::get('/contoh-dokumen/create', [ContohDokumenController::class, 'create'])->name('contoh-dokumen.create');
+        Route::post('/contoh-dokumen', [ContohDokumenController::class, 'store'])->name('contoh-dokumen.store');
+        Route::get('/contoh-dokumen/{contohDokumen}/edit', [ContohDokumenController::class, 'edit'])->name('contoh-dokumen.edit');
+        Route::put('/contoh-dokumen/{contohDokumen}', [ContohDokumenController::class, 'update'])->name('contoh-dokumen.update');
+        Route::delete('/contoh-dokumen/{contohDokumen}', [ContohDokumenController::class, 'destroy'])->name('contoh-dokumen.destroy');
+        Route::get('/contoh-dokumen/{contohDokumen}/download', [ContohDokumenController::class, 'download'])->name('contoh-dokumen.download');
+        Route::get('/contoh-dokumen/{contohDokumen}/preview', [ContohDokumenController::class, 'preview'])->name('contoh-dokumen.preview');
+
         // Super Admin Only Routes
         Route::middleware('super_admin')->group(function () {
             // Activity Log
@@ -157,15 +175,26 @@ Route::prefix('layanan')->name('user.')->group(function () {
         Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
         Route::post('/logout', [UserAuthController::class, 'logout'])->name('logout');
 
-        // Layanan
+        // Layanan - Alur baru
         Route::get('/ajukan', [LayananController::class, 'index'])->name('layanan');
         Route::get('/ajukan/{kode}', [LayananController::class, 'create'])->name('layanan.create');
-        Route::post('/ajukan/{kode}', [LayananController::class, 'storeStep2'])->name('layanan.store-step2');
-        Route::get('/ajukan/{kode}/upload', [LayananController::class, 'upload'])->name('layanan.upload');
-        Route::post('/ajukan/{kode}/upload', [LayananController::class, 'store'])->name('layanan.store');
+        Route::post('/ajukan/{kode}', [LayananController::class, 'store'])->name('layanan.store');
+
+        // Riwayat & Detail
         Route::get('/riwayat', [LayananController::class, 'riwayat'])->name('layanan.riwayat');
         Route::get('/riwayat/{id}', [LayananController::class, 'detail'])->name('layanan.detail');
-        Route::post('/riwayat/{id}/reupload/{dokumenId}', [LayananController::class, 'reupload'])->name('layanan.reupload');
+
+        // Upload ulang Surat Penawaran (jika revisi)
+        Route::post('/riwayat/{id}/reupload-sp', [LayananController::class, 'reuploadSuratPenawaran'])->name('layanan.reupload-sp');
+
+        // Upload KAK (setelah SP disetujui atau revisi KAK)
+        Route::post('/riwayat/{id}/upload-kak', [LayananController::class, 'uploadKAK'])->name('layanan.upload-kak');
+
+        // Upload Link Nota Kesepakatan (setelah KAK disetujui)
+        Route::post('/riwayat/{id}/upload-nota', [LayananController::class, 'uploadNotaKesepakatan'])->name('layanan.upload-nota');
+
+        // Contoh Dokumen (untuk user)
+        Route::get('/contoh-dokumen/{id}/download', [LayananController::class, 'downloadContohDokumen'])->name('contoh-dokumen.download');
 
         // Profile
         Route::get('/profil', [ProfileController::class, 'index'])->name('profile');

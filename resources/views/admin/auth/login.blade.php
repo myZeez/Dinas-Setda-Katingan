@@ -17,6 +17,9 @@
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         :root {
             --primary-color: #2563eb;
@@ -264,20 +267,6 @@
                     <p>Silakan login untuk mengakses panel administrator</p>
                 </div>
 
-                @if($errors->any())
-                    <div class="alert alert-danger">
-                        @foreach($errors->all() as $error)
-                            <div>{{ $error }}</div>
-                        @endforeach
-                    </div>
-                @endif
-
-                @if(session('error'))
-                    <div class="alert alert-danger">
-                        {{ session('error') }}
-                    </div>
-                @endif
-
                 <form action="{{ route('admin.login.submit') }}" method="POST">
                     @csrf
 
@@ -342,6 +331,34 @@
                 toggleIcon.classList.add('bi-eye');
             }
         }
+
+        // SweetAlert for session messages
+        @if(session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ session('success') }}',
+            confirmButtonColor: '#2563eb'
+        });
+        @endif
+
+        @if(session('error'))
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal!',
+            text: '{{ session('error') }}',
+            confirmButtonColor: '#ef4444'
+        });
+        @endif
+
+        @if($errors->any())
+        Swal.fire({
+            icon: 'error',
+            title: 'Login Gagal!',
+            html: `@foreach($errors->all() as $error)<p class="mb-1">{{ $error }}</p>@endforeach`,
+            confirmButtonColor: '#ef4444'
+        });
+        @endif
     </script>
 </body>
 </html>

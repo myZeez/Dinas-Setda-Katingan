@@ -23,25 +23,234 @@
                 <div class="d-flex align-items-center">
                     <div class="flex-grow-1">
                         <span class="badge bg-{{ $pengajuan->status_color }} fs-6 px-3 py-2">
-                            <i class="bi bi-{{ $pengajuan->status == 'selesai' ? 'check-circle' : ($pengajuan->status == 'koreksi' ? 'exclamation-triangle' : ($pengajuan->status == 'ditolak' ? 'x-circle' : 'clock')) }} me-1"></i>
+                            @php
+                                $statusIcon = match($pengajuan->status) {
+                                    'selesai' => 'check-circle',
+                                    'ditolak' => 'x-circle',
+                                    'sp_revisi' => 'exclamation-triangle',
+                                    'kak_revisi' => 'exclamation-triangle',
+                                    'sp_disetujui' => 'check2-circle',
+                                    'kak_disetujui' => 'check2-circle',
+                                    'menunggu_review_kak' => 'hourglass-split',
+                                    default => 'clock'
+                                };
+                            @endphp
+                            <i class="bi bi-{{ $statusIcon }} me-1"></i>
                             {{ $pengajuan->status_label }}
                         </span>
                     </div>
-                    @if($pengajuan->status == 'selesai')
-                    <a href="#" class="btn btn-success">
-                        <i class="bi bi-download me-1"></i> Download Dokumen Jadi
-                    </a>
-                    @endif
                 </div>
 
-                @if($pengajuan->catatan_admin)
-                <div class="alert alert-{{ $pengajuan->status == 'ditolak' ? 'danger' : ($pengajuan->status == 'koreksi' ? 'warning' : 'info') }} mt-3 mb-0">
+                @if($pengajuan->catatan_admin && !in_array($pengajuan->status, ['selesai', 'sp_revisi', 'kak_revisi']))
+                <div class="alert alert-{{ $pengajuan->status == 'ditolak' ? 'danger' : 'info' }} mt-3 mb-0">
                     <strong>Catatan Admin:</strong><br>
                     {{ $pengajuan->catatan_admin }}
                 </div>
                 @endif
             </div>
         </div>
+
+        <!-- Dokumen Hasil / Surat Bukti Selesai -->
+        @if($pengajuan->status == 'selesai' && $pengajuan->dokumen_hasil)
+        <div class="card mb-4 border-success">
+            <div class="card-header bg-success text-white">
+                <h6 class="mb-0"><i class="bi bi-patch-check-fill me-2"></i>Pengajuan Selesai - Dokumen Tersedia</h6>
+            </div>
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <div class="rounded-circle bg-success bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="bi bi-check-circle text-success" style="font-size: 48px;"></i>
+                    </div>
+                    <h5 class="text-success mb-2">Selamat! Pengajuan Anda Telah Selesai</h5>
+                    <p class="text-muted mb-0">Dokumen resmi/surat bukti telah tersedia untuk diunduh</p>
+                </div>
+
+                @if($pengajuan->catatan_admin)
+                <div class="alert alert-success mb-4">
+                    <strong><i class="bi bi-chat-quote me-1"></i> Pesan dari Admin:</strong><br>
+                    {{ $pengajuan->catatan_admin }}
+                </div>
+                @endif
+
+                <div class="border rounded p-3 bg-light">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-file-earmark-pdf text-danger me-3" style="font-size: 48px;"></i>
+                        <div class="flex-grow-1">
+                            <p class="mb-1 fw-semibold">Surat Bukti / Dokumen Resmi</p>
+                            <small class="text-muted">{{ basename($pengajuan->dokumen_hasil) }}</small>
+                            @if($pengajuan->tanggal_selesai)
+                            <br><small class="text-muted">Diterbitkan: {{ \Carbon\Carbon::parse($pengajuan->tanggal_selesai)->format('d F Y, H:i') }} WIB</small>
+                            @endif
+                        </div>
+                        <div class="d-flex flex-column gap-2">
+                            <a href="{{ Storage::url($pengajuan->dokumen_hasil) }}" target="_blank" class="btn btn-outline-success">
+                                <i class="bi bi-eye me-1"></i> Lihat
+                            </a>
+                            <a href="{{ Storage::url($pengajuan->dokumen_hasil) }}" download class="btn btn-success">
+                                <i class="bi bi-download me-1"></i> Download
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        <!-- Notifikasi SP Revisi -->
+        @if($pengajuan->status == 'sp_revisi')
+        <div class="card mb-4 border-warning">
+            <div class="card-header bg-warning text-dark">
+                <h6 class="mb-0"><i class="bi bi-exclamation-triangle me-2"></i>Surat Penawaran Perlu Revisi</h6>
+            </div>
+            <div class="card-body p-4">
+                @if($pengajuan->catatan_revisi_sp)
+                <div class="alert alert-warning mb-3">
+                    <strong>Catatan Revisi dari Admin:</strong><br>
+                    {{ $pengajuan->catatan_revisi_sp }}
+                </div>
+                @endif
+
+                <p class="mb-3">Silakan upload ulang Surat Penawaran yang sudah direvisi:</p>
+
+                <form id="reuploadSPForm" action="{{ route('user.layanan.reupload-sp', $pengajuan->id) }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Surat Penawaran (Revisi) <span class="text-danger">*</span></label>
+                        <input type="file" name="surat_penawaran" class="form-control" accept=".pdf" required>
+                        <small class="text-muted">Format: PDF, Maksimal 5MB</small>
+                    </div>
+                    <button type="button" class="btn btn-warning" onclick="confirmReuploadSP()">
+                        <i class="bi bi-upload me-1"></i> Upload Surat Penawaran Revisi
+                    </button>
+                </form>
+            </div>
+        </div>
+        @endif
+
+        <!-- Form Upload Dokumen Lanjutan (ketika SP Disetujui) - Hanya upload KAK -->
+        @if($pengajuan->status == 'sp_disetujui')
+        <div class="card mb-4 border-success">
+            <div class="card-header bg-success text-white">
+                <h6 class="mb-0"><i class="bi bi-check-circle me-2"></i>Surat Penawaran Disetujui - Upload KAK</h6>
+            </div>
+            <div class="card-body p-4">
+                <div class="alert alert-success mb-4">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Selamat! Surat Penawaran Anda telah disetujui. Silakan upload <strong>Kerangka Acuan Kerja (KAK)</strong> untuk melanjutkan proses pengajuan.
+                </div>
+
+                <form id="uploadKAKForm" action="{{ route('user.layanan.upload-kak', $pengajuan->id) }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Kerangka Acuan Kerja (KAK) <span class="text-danger">*</span></label>
+                        <input type="file" name="file_kak" class="form-control" accept=".pdf" required>
+                        <small class="text-muted">Format: PDF, Maksimal 5MB</small>
+                    </div>
+
+                    <div class="alert alert-info mb-4">
+                        <h6 class="alert-heading"><i class="bi bi-lightbulb me-1"></i> Tips:</h6>
+                        <ul class="mb-0 small">
+                            <li>KAK harus dalam format PDF dan sesuai dengan ketentuan yang berlaku</li>
+                            <li>Setelah upload, KAK akan direview oleh admin</li>
+                            <li>Jika disetujui, Anda akan diminta untuk melengkapi Link Nota Kesepakatan</li>
+                        </ul>
+                    </div>
+
+                    <button type="button" class="btn btn-success" onclick="confirmUploadKAK()">
+                        <i class="bi bi-upload me-1"></i> Upload KAK
+                    </button>
+                </form>
+            </div>
+        </div>
+        @endif
+
+        <!-- KAK Menunggu Review -->
+        @if($pengajuan->status == 'menunggu_review_kak')
+        <div class="card mb-4 border-info">
+            <div class="card-header bg-info text-white">
+                <h6 class="mb-0"><i class="bi bi-hourglass-split me-2"></i>KAK Sedang Direview</h6>
+            </div>
+            <div class="card-body p-4">
+                <div class="text-center py-3">
+                    <div class="spinner-border text-info mb-3" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <h5 class="text-info mb-2">Kerangka Acuan Kerja Sedang Direview</h5>
+                    <p class="text-muted mb-0">Admin sedang memeriksa dokumen KAK Anda. Mohon tunggu konfirmasi.</p>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        <!-- Notifikasi KAK Revisi -->
+        @if($pengajuan->status == 'kak_revisi')
+        <div class="card mb-4 border-warning">
+            <div class="card-header bg-warning text-dark">
+                <h6 class="mb-0"><i class="bi bi-exclamation-triangle me-2"></i>KAK Perlu Revisi</h6>
+            </div>
+            <div class="card-body p-4">
+                @if($pengajuan->catatan_revisi_kak)
+                <div class="alert alert-warning mb-3">
+                    <strong>Catatan Revisi KAK dari Admin:</strong><br>
+                    {{ $pengajuan->catatan_revisi_kak }}
+                </div>
+                @endif
+
+                <p class="mb-3">Silakan upload ulang Kerangka Acuan Kerja (KAK) yang sudah direvisi:</p>
+
+                <form id="reuploadKAKForm" action="{{ route('user.layanan.upload-kak', $pengajuan->id) }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Kerangka Acuan Kerja (Revisi) <span class="text-danger">*</span></label>
+                        <input type="file" name="file_kak" class="form-control" accept=".pdf" required>
+                        <small class="text-muted">Format: PDF, Maksimal 5MB</small>
+                    </div>
+                    <button type="button" class="btn btn-warning" onclick="confirmReuploadKAK()">
+                        <i class="bi bi-upload me-1"></i> Upload KAK Revisi
+                    </button>
+                </form>
+            </div>
+        </div>
+        @endif
+
+        <!-- Form Upload Nota Kesepakatan (ketika KAK Disetujui) -->
+        @if($pengajuan->status == 'kak_disetujui')
+        <div class="card mb-4 border-success">
+            <div class="card-header bg-success text-white">
+                <h6 class="mb-0"><i class="bi bi-check-circle me-2"></i>KAK Disetujui - Upload Nota Kesepakatan</h6>
+            </div>
+            <div class="card-body p-4">
+                <div class="alert alert-success mb-4">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Selamat! Kerangka Acuan Kerja (KAK) Anda telah disetujui. Silakan lengkapi <strong>Link Nota Kesepakatan (Google Docs)</strong> untuk menyelesaikan pengajuan.
+                </div>
+
+                <form id="uploadNotaForm" action="{{ route('user.layanan.upload-nota', $pengajuan->id) }}" method="POST">
+                    @csrf
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Link Nota Kesepakatan (Google Docs) <span class="text-danger">*</span></label>
+                        <input type="url" name="link_nota_kesepakatan" class="form-control"
+                               placeholder="https://docs.google.com/document/d/..." required>
+                        <small class="text-muted">Masukkan link Google Docs yang berisi Nota Kesepakatan. Pastikan link dapat diakses oleh admin.</small>
+                    </div>
+
+                    <div class="alert alert-info mb-4">
+                        <h6 class="alert-heading"><i class="bi bi-lightbulb me-1"></i> Tips:</h6>
+                        <ul class="mb-0 small">
+                            <li>Pastikan dokumen Google Docs sudah di-setting share ke "Anyone with the link can view"</li>
+                            <li>Setelah submit, dokumen Anda akan masuk ke antrian proses</li>
+                        </ul>
+                    </div>
+
+                    <button type="button" class="btn btn-success" onclick="confirmUploadNota()">
+                        <i class="bi bi-send me-1"></i> Submit Nota Kesepakatan
+                    </button>
+                </form>
+            </div>
+        </div>
+        @endif
 
         <!-- Informasi Pengajuan -->
         <div class="card mb-4">
@@ -97,15 +306,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($pengajuan->dokumens as $dokumen)
+                            <!-- Surat Penawaran (dari relasi dokumens) - hanya tampilkan surat_penawaran -->
+                            @foreach($pengajuan->dokumens->where('jenis_dokumen', 'surat_penawaran') as $dokumen)
                             <tr>
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        @if(in_array($dokumen->jenis_dokumen, ['surat_penawaran', 'kerangka_acuan_kerja']))
                                         <i class="bi bi-file-earmark-pdf text-danger me-2" style="font-size: 24px;"></i>
-                                        @else
-                                        <i class="bi bi-file-earmark-word text-primary me-2" style="font-size: 24px;"></i>
-                                        @endif
                                         <div>
                                             <p class="mb-0 fw-semibold">{{ $dokumen->jenis_dokumen_label }}</p>
                                             <small class="text-muted">{{ basename($dokumen->file_path) }}</small>
@@ -113,67 +319,127 @@
                                     </div>
                                 </td>
                                 <td class="text-center">
-                                    <span class="badge bg-{{ $dokumen->status_color }}">
-                                        {{ $dokumen->status_label }}
-                                    </span>
-                                    @if($dokumen->catatan)
-                                    <br>
-                                    <small class="text-muted">{{ $dokumen->catatan }}</small>
+                                    @if($pengajuan->status == 'sp_revisi')
+                                        <span class="badge bg-warning">Perlu Revisi</span>
+                                    @elseif(in_array($pengajuan->status, ['sp_disetujui', 'menunggu_review_kak', 'kak_revisi', 'kak_disetujui', 'dokumen_lengkap', 'diproses', 'selesai']))
+                                        <span class="badge bg-success">Disetujui</span>
+                                    @else
+                                        <span class="badge bg-info">Menunggu Review</span>
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    <div class="btn-group btn-group-sm">
-                                        <a href="{{ Storage::url($dokumen->file_path) }}" target="_blank" class="btn btn-outline-primary" title="Lihat">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                        @if($dokumen->status == 'koreksi')
-                                        <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#reuploadModal{{ $dokumen->id }}" title="Upload Ulang">
-                                            <i class="bi bi-upload"></i>
-                                        </button>
-                                        @endif
-                                    </div>
+                                    <a href="{{ Storage::url($dokumen->file_path) }}" target="_blank" class="btn btn-outline-primary btn-sm" title="Lihat">
+                                        <i class="bi bi-eye"></i> Lihat
+                                    </a>
                                 </td>
                             </tr>
-
-                            <!-- Re-upload Modal -->
-                            @if($dokumen->status == 'koreksi')
-                            <div class="modal fade" id="reuploadModal{{ $dokumen->id }}" tabindex="-1">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">Upload Ulang {{ $dokumen->jenis_dokumen_label }}</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                        </div>
-                                        <form action="{{ route('user.layanan.reupload', [$pengajuan->id, $dokumen->id]) }}" method="POST" enctype="multipart/form-data">
-                                            @csrf
-                                            <div class="modal-body">
-                                                @if($dokumen->catatan)
-                                                <div class="alert alert-warning">
-                                                    <strong>Catatan Admin:</strong><br>
-                                                    {{ $dokumen->catatan }}
-                                                </div>
-                                                @endif
-                                                <div class="mb-3">
-                                                    <label class="form-label">Pilih File Baru</label>
-                                                    @if(in_array($dokumen->jenis_dokumen, ['surat_penawaran', 'kerangka_acuan_kerja']))
-                                                    <input type="file" name="file" class="form-control" accept=".pdf" required>
-                                                    <small class="text-muted">Format: PDF, Maks. 5MB</small>
-                                                    @else
-                                                    <input type="file" name="file" class="form-control" accept=".doc,.docx" required>
-                                                    <small class="text-muted">Format: DOC/DOCX, Maks. 10MB</small>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                                <button type="submit" class="btn btn-warning">Upload Ulang</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                            @endif
                             @endforeach
+
+                            <!-- KAK (dari kolom file_kak) -->
+                            @if($pengajuan->file_kak)
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-file-earmark-pdf text-danger me-2" style="font-size: 24px;"></i>
+                                        <div>
+                                            <p class="mb-0 fw-semibold">Kerangka Acuan Kerja (KAK)</p>
+                                            <small class="text-muted">{{ basename($pengajuan->file_kak) }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    @if($pengajuan->status == 'menunggu_review_kak')
+                                        <span class="badge bg-info">Menunggu Review</span>
+                                    @elseif($pengajuan->status == 'kak_revisi')
+                                        <span class="badge bg-warning">Perlu Revisi</span>
+                                    @elseif(in_array($pengajuan->status, ['kak_disetujui', 'dokumen_lengkap', 'diproses', 'proses_ttd', 'penjadwalan_ttd', 'selesai']))
+                                        <span class="badge bg-success">Disetujui</span>
+                                    @else
+                                        <span class="badge bg-secondary">Uploaded</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    <a href="{{ Storage::url($pengajuan->file_kak) }}" target="_blank" class="btn btn-outline-primary btn-sm" title="Lihat">
+                                        <i class="bi bi-eye"></i> Lihat
+                                    </a>
+                                </td>
+                            </tr>
+                            @elseif(in_array($pengajuan->status, ['menunggu_review_sp', 'sp_revisi', 'sp_disetujui']))
+                            <tr class="text-muted">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-file-earmark text-secondary me-2" style="font-size: 24px;"></i>
+                                        <div>
+                                            <p class="mb-0 fw-semibold">Kerangka Acuan Kerja (KAK)</p>
+                                            <small class="text-muted">Belum diupload</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    @if($pengajuan->status == 'sp_disetujui')
+                                        <span class="badge bg-warning">Menunggu Upload</span>
+                                    @else
+                                        <span class="badge bg-secondary">Menunggu SP Disetujui</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">-</td>
+                            </tr>
+                            @endif
+
+                            <!-- Nota Kesepakatan (Link Google Docs) -->
+                            @if($pengajuan->link_nota_kesepakatan)
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-link-45deg text-primary me-2" style="font-size: 24px;"></i>
+                                        <div>
+                                            <p class="mb-0 fw-semibold">Nota Kesepakatan</p>
+                                            <small class="text-muted">Link Google Docs</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-success">Submitted</span>
+                                </td>
+                                <td class="text-center">
+                                    <a href="{{ $pengajuan->link_nota_kesepakatan }}" target="_blank" class="btn btn-outline-primary btn-sm" title="Buka Link">
+                                        <i class="bi bi-box-arrow-up-right"></i> Buka
+                                    </a>
+                                </td>
+                            </tr>
+                            @elseif(in_array($pengajuan->status, ['menunggu_review_sp', 'sp_revisi', 'sp_disetujui', 'menunggu_review_kak', 'kak_revisi']))
+                            <tr class="text-muted">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-link-45deg text-secondary me-2" style="font-size: 24px;"></i>
+                                        <div>
+                                            <p class="mb-0 fw-semibold">Nota Kesepakatan</p>
+                                            <small class="text-muted">Link Google Docs - Belum diinput</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-secondary">Menunggu KAK Disetujui</span>
+                                </td>
+                                <td class="text-center">-</td>
+                            </tr>
+                            @elseif($pengajuan->status == 'kak_disetujui')
+                            <tr class="text-muted">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-link-45deg text-secondary me-2" style="font-size: 24px;"></i>
+                                        <div>
+                                            <p class="mb-0 fw-semibold">Nota Kesepakatan</p>
+                                            <small class="text-muted">Link Google Docs - Belum diinput</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-warning">Menunggu Upload</span>
+                                </td>
+                                <td class="text-center">-</td>
+                            </tr>
+                            @endif
                         </tbody>
                     </table>
                 </div>
@@ -227,13 +493,45 @@
             <div class="card-body p-4">
                 <div class="timeline">
                     @foreach($pengajuan->logs->sortByDesc('created_at') as $log)
+                    @php
+                        $logColor = match($log->status) {
+                            'selesai' => 'success',
+                            'ditolak' => 'danger',
+                            'sp_revisi' => 'warning',
+                            'kak_revisi' => 'warning',
+                            'sp_disetujui' => 'success',
+                            'kak_disetujui' => 'success',
+                            'dokumen_lengkap' => 'info',
+                            'menunggu_review_kak' => 'info',
+                            default => 'primary'
+                        };
+                    @endphp
                     <div class="timeline-item">
-                        <div class="timeline-marker bg-{{ $log->status == 'selesai' ? 'success' : ($log->status == 'ditolak' ? 'danger' : ($log->status == 'koreksi' ? 'warning' : 'primary')) }}"></div>
+                        <div class="timeline-marker bg-{{ $logColor }}"></div>
                         <div class="timeline-content">
                             <p class="mb-0 fw-semibold small">
                                 @switch($log->status)
                                     @case('diajukan')
-                                        Pengajuan Dikirim
+                                    @case('menunggu_review_sp')
+                                        Pengajuan Dikirim - Menunggu Review SP
+                                        @break
+                                    @case('sp_disetujui')
+                                        Surat Penawaran Disetujui
+                                        @break
+                                    @case('sp_revisi')
+                                        Surat Penawaran Perlu Revisi
+                                        @break
+                                    @case('menunggu_review_kak')
+                                        KAK Diupload - Menunggu Review
+                                        @break
+                                    @case('kak_disetujui')
+                                        KAK Disetujui
+                                        @break
+                                    @case('kak_revisi')
+                                        KAK Perlu Revisi
+                                        @break
+                                    @case('dokumen_lengkap')
+                                        Dokumen Lengkap - Menunggu Proses
                                         @break
                                     @case('diproses')
                                         Sedang Diproses
@@ -254,7 +552,7 @@
                                         Ditolak
                                         @break
                                     @default
-                                        {{ ucfirst($log->status) }}
+                                        {{ ucfirst(str_replace('_', ' ', $log->status)) }}
                                 @endswitch
                             </p>
                             <small class="text-muted">{{ $log->created_at->format('d M Y, H:i') }}</small>
@@ -305,4 +603,138 @@
         padding-left: 5px;
     }
 </style>
+@endpush
+
+@push('scripts')
+<script>
+    // Confirm Reupload Surat Penawaran
+    function confirmReuploadSP() {
+        const form = document.getElementById('reuploadSPForm');
+        const fileInput = form.querySelector('input[name="surat_penawaran"]');
+
+        if (!fileInput.files.length) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'File Belum Dipilih',
+                text: 'Silakan pilih file Surat Penawaran terlebih dahulu!',
+                confirmButtonColor: '#ffc107'
+            });
+            return;
+        }
+
+        Swal.fire({
+            title: 'Upload Surat Penawaran Revisi?',
+            text: 'Pastikan dokumen yang diupload sudah sesuai dengan catatan revisi dari admin.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#ffc107',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: '<i class="bi bi-upload"></i> Ya, Upload',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+
+    // Confirm Upload KAK
+    function confirmUploadKAK() {
+        const form = document.getElementById('uploadKAKForm');
+        const fileKak = form.querySelector('input[name="file_kak"]');
+
+        if (!fileKak.files.length) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'File KAK Belum Dipilih',
+                text: 'Silakan pilih file Kerangka Acuan Kerja (KAK) terlebih dahulu!',
+                confirmButtonColor: '#ffc107'
+            });
+            return;
+        }
+
+        Swal.fire({
+            title: 'Upload Kerangka Acuan Kerja?',
+            html: `
+                <p>KAK Anda akan dikirim untuk direview oleh admin.</p>
+                <p class="mb-0 small text-muted">Pastikan dokumen sudah benar sebelum mengirim.</p>
+            `,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#198754',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: '<i class="bi bi-upload"></i> Ya, Upload',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+
+    // Confirm Reupload KAK (Revisi)
+    function confirmReuploadKAK() {
+        const form = document.getElementById('reuploadKAKForm');
+        const fileKak = form.querySelector('input[name="file_kak"]');
+
+        if (!fileKak.files.length) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'File Belum Dipilih',
+                text: 'Silakan pilih file KAK terlebih dahulu!',
+                confirmButtonColor: '#ffc107'
+            });
+            return;
+        }
+
+        Swal.fire({
+            title: 'Upload KAK Revisi?',
+            text: 'Pastikan dokumen yang diupload sudah sesuai dengan catatan revisi dari admin.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#ffc107',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: '<i class="bi bi-upload"></i> Ya, Upload',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+
+    // Confirm Upload Nota Kesepakatan
+    function confirmUploadNota() {
+        const form = document.getElementById('uploadNotaForm');
+        const linkNota = form.querySelector('input[name="link_nota_kesepakatan"]');
+
+        if (!linkNota.value) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Link Nota Kesepakatan Kosong',
+                text: 'Silakan masukkan link Google Docs Nota Kesepakatan!',
+                confirmButtonColor: '#ffc107'
+            });
+            return;
+        }
+
+        Swal.fire({
+            title: 'Submit Nota Kesepakatan?',
+            html: `
+                <p>Dengan submit Link Nota Kesepakatan, pengajuan Anda akan masuk ke antrian proses.</p>
+                <p class="mb-0 small text-muted">Pastikan link dapat diakses oleh admin.</p>
+            `,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#198754',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: '<i class="bi bi-send"></i> Ya, Submit',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+</script>
 @endpush

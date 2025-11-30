@@ -20,11 +20,11 @@ class LayananController extends Controller
     {
         $stats = [
             'total' => PengajuanLayanan::count(),
-            'diajukan' => PengajuanLayanan::where('status', 'diajukan')->count(),
+            'menunggu_review_sp' => PengajuanLayanan::where('status', 'menunggu_review_sp')->count(),
+            'sp_disetujui' => PengajuanLayanan::where('status', 'sp_disetujui')->count(),
+            'sp_revisi' => PengajuanLayanan::where('status', 'sp_revisi')->count(),
+            'dokumen_lengkap' => PengajuanLayanan::where('status', 'dokumen_lengkap')->count(),
             'diproses' => PengajuanLayanan::where('status', 'diproses')->count(),
-            'koreksi' => PengajuanLayanan::where('status', 'koreksi')->count(),
-            'proses_ttd' => PengajuanLayanan::where('status', 'proses_ttd')->count(),
-            'penjadwalan_ttd' => PengajuanLayanan::where('status', 'penjadwalan_ttd')->count(),
             'selesai' => PengajuanLayanan::where('status', 'selesai')->count(),
             'ditolak' => PengajuanLayanan::where('status', 'ditolak')->count(),
         ];
@@ -115,6 +115,122 @@ class LayananController extends Controller
     }
 
     /**
+     * Approve Surat Penawaran
+     */
+    public function approveSuratPenawaran($id)
+    {
+        $pengajuan = PengajuanLayanan::findOrFail($id);
+
+        if ($pengajuan->status != 'menunggu_review_sp' && $pengajuan->status != 'sp_revisi') {
+            return back()->with('error', 'Pengajuan tidak dalam status menunggu review.');
+        }
+
+        $pengajuan->update([
+            'status' => 'sp_disetujui',
+            'catatan_revisi_sp' => null,
+        ]);
+
+        // Create log
+        LogPengajuan::create([
+            'pengajuan_layanan_id' => $pengajuan->id,
+            'user_id' => Auth::id(),
+            'status' => 'sp_disetujui',
+            'keterangan' => 'Surat Penawaran disetujui oleh admin',
+        ]);
+
+        return back()->with('success', 'Surat Penawaran berhasil disetujui. User dapat melanjutkan upload dokumen.');
+    }
+
+    /**
+     * Request revision for Surat Penawaran
+     */
+    public function revisiSuratPenawaran(Request $request, $id)
+    {
+        $pengajuan = PengajuanLayanan::findOrFail($id);
+
+        if ($pengajuan->status != 'menunggu_review_sp' && $pengajuan->status != 'sp_revisi') {
+            return back()->with('error', 'Pengajuan tidak dalam status menunggu review.');
+        }
+
+        $validated = $request->validate([
+            'catatan_revisi_sp' => 'required|string|max:1000',
+        ]);
+
+        $pengajuan->update([
+            'status' => 'sp_revisi',
+            'catatan_revisi_sp' => $validated['catatan_revisi_sp'],
+        ]);
+
+        // Create log
+        LogPengajuan::create([
+            'pengajuan_layanan_id' => $pengajuan->id,
+            'user_id' => Auth::id(),
+            'status' => 'sp_revisi',
+            'keterangan' => 'Surat Penawaran perlu revisi: ' . $validated['catatan_revisi_sp'],
+        ]);
+
+        return back()->with('success', 'Permintaan revisi Surat Penawaran berhasil dikirim ke user.');
+    }
+
+    /**
+     * Approve KAK (Kerangka Acuan Kerja)
+     */
+    public function approveKAK($id)
+    {
+        $pengajuan = PengajuanLayanan::findOrFail($id);
+
+        if ($pengajuan->status != 'menunggu_review_kak' && $pengajuan->status != 'kak_revisi') {
+            return back()->with('error', 'Pengajuan tidak dalam status menunggu review KAK.');
+        }
+
+        $pengajuan->update([
+            'status' => 'kak_disetujui',
+            'catatan_revisi_kak' => null,
+        ]);
+
+        // Create log
+        LogPengajuan::create([
+            'pengajuan_layanan_id' => $pengajuan->id,
+            'user_id' => Auth::id(),
+            'status' => 'kak_disetujui',
+            'keterangan' => 'Kerangka Acuan Kerja (KAK) disetujui oleh admin',
+        ]);
+
+        return back()->with('success', 'KAK berhasil disetujui. User dapat melanjutkan upload Link Nota Kesepakatan.');
+    }
+
+    /**
+     * Request revision for KAK
+     */
+    public function revisiKAK(Request $request, $id)
+    {
+        $pengajuan = PengajuanLayanan::findOrFail($id);
+
+        if ($pengajuan->status != 'menunggu_review_kak' && $pengajuan->status != 'kak_revisi') {
+            return back()->with('error', 'Pengajuan tidak dalam status menunggu review KAK.');
+        }
+
+        $validated = $request->validate([
+            'catatan_revisi_kak' => 'required|string|max:1000',
+        ]);
+
+        $pengajuan->update([
+            'status' => 'kak_revisi',
+            'catatan_revisi_kak' => $validated['catatan_revisi_kak'],
+        ]);
+
+        // Create log
+        LogPengajuan::create([
+            'pengajuan_layanan_id' => $pengajuan->id,
+            'user_id' => Auth::id(),
+            'status' => 'kak_revisi',
+            'keterangan' => 'KAK perlu revisi: ' . $validated['catatan_revisi_kak'],
+        ]);
+
+        return back()->with('success', 'Permintaan revisi KAK berhasil dikirim ke user.');
+    }
+
+    /**
      * Update status dokumen
      */
     public function updateDokumen(Request $request, $id, $dokumenId)
@@ -150,18 +266,31 @@ class LayananController extends Controller
     {
         $pengajuan = PengajuanLayanan::findOrFail($id);
 
+        // Validasi status - harus sudah dokumen lengkap atau sedang diproses
+        if (!in_array($pengajuan->status, ['dokumen_lengkap', 'diproses', 'proses_ttd', 'penjadwalan_ttd'])) {
+            return back()->with('error', 'Pengajuan tidak dalam status yang dapat diselesaikan.');
+        }
+
         $validated = $request->validate([
             'dokumen_hasil' => 'required|file|mimes:pdf|max:10240',
+            'catatan_selesai' => 'nullable|string|max:1000',
+        ], [
+            'dokumen_hasil.required' => 'Dokumen hasil wajib diupload',
+            'dokumen_hasil.mimes' => 'Dokumen harus format PDF',
+            'dokumen_hasil.max' => 'Ukuran file maksimal 10MB',
         ]);
 
         // Upload file
         $file = $request->file('dokumen_hasil');
-        $fileName = time() . '_hasil_' . $file->getClientOriginalName();
+        $fileName = time() . '_surat_bukti_selesai_' . $file->getClientOriginalName();
         $filePath = $file->storeAs('dokumen_layanan/' . $pengajuan->id . '/hasil', $fileName, 'public');
 
+        // Update pengajuan
         $pengajuan->update([
             'dokumen_hasil' => $filePath,
             'status' => 'selesai',
+            'catatan_admin' => $request->catatan_selesai ?? 'Pengajuan telah selesai diproses.',
+            'tanggal_selesai' => now(),
         ]);
 
         // Create log
@@ -169,10 +298,11 @@ class LayananController extends Controller
             'pengajuan_layanan_id' => $pengajuan->id,
             'user_id' => Auth::id(),
             'status' => 'selesai',
-            'keterangan' => 'Dokumen hasil telah diupload',
+            'keterangan' => 'Pengajuan selesai. Dokumen hasil/surat bukti telah diupload dan dikirim ke pemohon.' .
+                ($request->catatan_selesai ? ' Catatan: ' . $request->catatan_selesai : ''),
         ]);
 
-        return back()->with('success', 'Dokumen hasil berhasil diupload dan pengajuan selesai.');
+        return back()->with('success', 'Pengajuan berhasil diselesaikan! Dokumen hasil telah dikirim ke pemohon.');
     }
 
     /**

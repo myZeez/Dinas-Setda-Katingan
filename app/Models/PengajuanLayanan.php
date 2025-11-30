@@ -19,6 +19,10 @@ class PengajuanLayanan extends Model
         'status',
         'catatan_admin',
         'dokumen_hasil',
+        'file_kak',
+        'link_nota_kesepakatan',
+        'catatan_revisi_sp',
+        'catatan_revisi_kak',
         'tanggal_pengajuan',
         'tanggal_selesai',
     ];
@@ -28,14 +32,20 @@ class PengajuanLayanan extends Model
         'tanggal_selesai' => 'datetime',
     ];
 
-    // Status Labels
+    // Status Labels - Alur Bertahap
     const STATUS_LABELS = [
         'draft' => 'Draft',
-        'diajukan' => 'Diajukan',
+        'menunggu_review_sp' => 'Menunggu Review Surat Penawaran',
+        'sp_disetujui' => 'Surat Penawaran Disetujui - Upload KAK',
+        'sp_revisi' => 'Surat Penawaran Perlu Revisi',
+        'menunggu_review_kak' => 'Menunggu Review KAK',
+        'kak_disetujui' => 'KAK Disetujui - Upload Nota Kesepakatan',
+        'kak_revisi' => 'KAK Perlu Revisi',
+        'dokumen_lengkap' => 'Dokumen Lengkap',
         'diproses' => 'Sedang Diproses',
-        'koreksi' => 'Mohon Diperbaiki/Koreksi',
-        'proses_ttd' => 'Proses Penandatanganan',
-        'penjadwalan_ttd' => 'Penjadwalan Penandatanganan',
+        'koreksi' => 'Perlu Koreksi',
+        'proses_ttd' => 'Proses Tanda Tangan',
+        'penjadwalan_ttd' => 'Penjadwalan TTD',
         'selesai' => 'Selesai',
         'ditolak' => 'Ditolak',
     ];
@@ -43,7 +53,13 @@ class PengajuanLayanan extends Model
     // Status Colors for Badge
     const STATUS_COLORS = [
         'draft' => 'secondary',
-        'diajukan' => 'info',
+        'menunggu_review_sp' => 'info',
+        'sp_disetujui' => 'success',
+        'sp_revisi' => 'warning',
+        'menunggu_review_kak' => 'info',
+        'kak_disetujui' => 'success',
+        'kak_revisi' => 'warning',
+        'dokumen_lengkap' => 'primary',
         'diproses' => 'primary',
         'koreksi' => 'warning',
         'proses_ttd' => 'info',

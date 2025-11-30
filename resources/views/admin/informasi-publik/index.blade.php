@@ -213,37 +213,17 @@
                                 <a href="{{ route('admin.informasi-publik.edit', [$kategori->slug, $info->id]) }}" class="btn btn-outline-primary" title="Edit">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <button type="button" class="btn btn-outline-danger" title="Hapus" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $info->id }}">
+                                <button type="button" class="btn btn-outline-danger" title="Hapus"
+                                    onclick="confirmDelete('delete-info-{{ $info->id }}', 'Hapus Dokumen?', 'Dokumen \'{{ addslashes($info->judul) }}\' akan dihapus permanen!')">
                                     <i class="bi bi-trash"></i>
                                 </button>
+                                <form id="delete-info-{{ $info->id }}" action="{{ route('admin.informasi-publik.destroy', [$kategori->slug, $info->id]) }}" method="POST" class="d-none">
+                                    @csrf
+                                    @method('DELETE')
+                                </form>
                             </div>
                         </td>
                     </tr>
-
-                    <!-- Delete Modal -->
-                    <div class="modal fade" id="deleteModal{{ $info->id }}" tabindex="-1">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Hapus Dokumen</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p>Apakah Anda yakin ingin menghapus dokumen:</p>
-                                    <p class="fw-semibold">"{{ $info->judul }}"</p>
-                                    <p class="text-danger small mb-0">Tindakan ini tidak dapat dibatalkan.</p>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                    <form action="{{ route('admin.informasi-publik.destroy', [$kategori->slug, $info->id]) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger">Hapus</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     @endforeach
                 </tbody>
             </table>

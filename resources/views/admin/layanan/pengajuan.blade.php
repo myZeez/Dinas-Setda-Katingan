@@ -44,9 +44,11 @@
                     <label class="form-label small">Status</label>
                     <select name="status" class="form-select">
                         <option value="">Semua Status</option>
-                        <option value="diajukan" {{ request('status') == 'diajukan' ? 'selected' : '' }}>Diajukan</option>
+                        <option value="menunggu_review_sp" {{ request('status') == 'menunggu_review_sp' ? 'selected' : '' }}>Menunggu Review SP</option>
+                        <option value="sp_disetujui" {{ request('status') == 'sp_disetujui' ? 'selected' : '' }}>SP Disetujui</option>
+                        <option value="sp_revisi" {{ request('status') == 'sp_revisi' ? 'selected' : '' }}>SP Perlu Revisi</option>
+                        <option value="dokumen_lengkap" {{ request('status') == 'dokumen_lengkap' ? 'selected' : '' }}>Dokumen Lengkap</option>
                         <option value="diproses" {{ request('status') == 'diproses' ? 'selected' : '' }}>Diproses</option>
-                        <option value="koreksi" {{ request('status') == 'koreksi' ? 'selected' : '' }}>Perlu Koreksi</option>
                         <option value="proses_ttd" {{ request('status') == 'proses_ttd' ? 'selected' : '' }}>Proses TTD</option>
                         <option value="penjadwalan_ttd" {{ request('status') == 'penjadwalan_ttd' ? 'selected' : '' }}>Penjadwalan TTD</option>
                         <option value="selesai" {{ request('status') == 'selesai' ? 'selected' : '' }}>Selesai</option>

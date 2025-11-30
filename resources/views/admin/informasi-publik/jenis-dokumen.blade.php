@@ -71,9 +71,21 @@
                                 <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editModal{{ $jenis->id }}" title="Edit">
                                     <i class="bi bi-pencil"></i>
                                 </button>
-                                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $jenis->id }}" title="Hapus">
+                                @if($jenis->informasi_publiks_count == 0)
+                                <button type="button" class="btn btn-outline-danger" title="Hapus"
+                                    onclick="confirmDelete('delete-jenis-{{ $jenis->id }}', 'Hapus Jenis Dokumen?', 'Jenis dokumen \'{{ addslashes($jenis->nama) }}\' akan dihapus!')">
                                     <i class="bi bi-trash"></i>
                                 </button>
+                                <form id="delete-jenis-{{ $jenis->id }}" action="{{ route('admin.informasi-publik.jenis-dokumen.destroy', [$kategori->slug, $jenis->id]) }}" method="POST" class="d-none">
+                                    @csrf
+                                    @method('DELETE')
+                                </form>
+                                @else
+                                <button type="button" class="btn btn-outline-danger" title="Tidak dapat dihapus"
+                                    onclick="Swal.fire({icon: 'warning', title: 'Tidak Dapat Dihapus', text: 'Jenis dokumen ini memiliki {{ $jenis->informasi_publiks_count }} dokumen terkait!', confirmButtonColor: '#f59e0b'})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                                @endif
                             </div>
                         </td>
                     </tr>
@@ -108,40 +120,6 @@
                                         <button type="submit" class="btn btn-primary">Simpan</button>
                                     </div>
                                 </form>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Delete Modal -->
-                    <div class="modal fade" id="deleteModal{{ $jenis->id }}" tabindex="-1">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Hapus Jenis Dokumen</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p>Apakah Anda yakin ingin menghapus jenis dokumen:</p>
-                                    <p class="fw-semibold">"{{ $jenis->nama }}"</p>
-                                    @if($jenis->informasi_publiks_count > 0)
-                                    <div class="alert alert-warning">
-                                        <i class="bi bi-exclamation-triangle me-2"></i>
-                                        Jenis dokumen ini memiliki {{ $jenis->informasi_publiks_count }} dokumen terkait dan tidak dapat dihapus.
-                                    </div>
-                                    @else
-                                    <p class="text-danger small mb-0">Tindakan ini tidak dapat dibatalkan.</p>
-                                    @endif
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                    @if($jenis->informasi_publiks_count == 0)
-                                    <form action="{{ route('admin.informasi-publik.jenis-dokumen.destroy', [$kategori->slug, $jenis->id]) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger">Hapus</button>
-                                    </form>
-                                    @endif
-                                </div>
                             </div>
                         </div>
                     </div>

@@ -121,35 +121,15 @@
                     <a href="{{ route('admin.berita.edit', $berita) }}" class="btn btn-primary">
                         <i class="bi bi-pencil me-1"></i> Edit Berita
                     </a>
-                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                    <button type="button" class="btn btn-outline-danger"
+                        onclick="confirmDelete('delete-berita-form', 'Hapus Berita?', 'Berita ini akan dihapus permanen!')">
                         <i class="bi bi-trash me-1"></i> Hapus Berita
                     </button>
+                    <form id="delete-berita-form" action="{{ route('admin.berita.destroy', $berita) }}" method="POST" class="d-none">
+                        @csrf
+                        @method('DELETE')
+                    </form>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Delete Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Hapus Berita</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p>Apakah Anda yakin ingin menghapus berita:</p>
-                <p class="fw-semibold">"{{ $berita->judul }}"</p>
-                <p class="text-danger small mb-0">Tindakan ini tidak dapat dibatalkan.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <form action="{{ route('admin.berita.destroy', $berita) }}" method="POST" class="d-inline">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger">Hapus</button>
-                </form>
             </div>
         </div>
     </div>

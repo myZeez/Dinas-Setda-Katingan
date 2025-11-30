@@ -186,44 +186,23 @@
                                             <i class="bi bi-pencil"></i>
                                         </a>
                                         @if($user->id !== auth()->id())
-                                            <form action="{{ route('admin.users.toggle-status', $user->id) }}" method="POST" class="d-inline">
+                                            <button type="button" class="btn btn-outline-{{ $user->is_active ? 'warning' : 'success' }}" title="{{ $user->is_active ? 'Nonaktifkan' : 'Aktifkan' }}"
+                                                onclick="confirmAction('toggle-admin-{{ $user->id }}', '{{ $user->is_active ? 'Nonaktifkan' : 'Aktifkan' }} Admin?', 'Admin {{ addslashes($user->name) }} akan di{{ $user->is_active ? 'nonaktifkan' : 'aktifkan' }}', 'question', 'Ya, Lanjutkan', '{{ $user->is_active ? '#f59e0b' : '#22c55e' }}')">
+                                                <i class="bi bi-{{ $user->is_active ? 'pause' : 'play' }}"></i>
+                                            </button>
+                                            <form id="toggle-admin-{{ $user->id }}" action="{{ route('admin.users.toggle-status', $user->id) }}" method="POST" class="d-none">
                                                 @csrf
                                                 @method('PATCH')
-                                                <button type="submit" class="btn btn-outline-{{ $user->is_active ? 'warning' : 'success' }}" title="{{ $user->is_active ? 'Nonaktifkan' : 'Aktifkan' }}">
-                                                    <i class="bi bi-{{ $user->is_active ? 'pause' : 'play' }}"></i>
-                                                </button>
                                             </form>
-                                            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $user->id }}" title="Hapus">
+                                            <button type="button" class="btn btn-outline-danger" title="Hapus"
+                                                onclick="confirmDelete('delete-admin-{{ $user->id }}', 'Hapus Admin?', 'Admin {{ addslashes($user->name) }} akan dihapus permanen!')">
                                                 <i class="bi bi-trash"></i>
                                             </button>
+                                            <form id="delete-admin-{{ $user->id }}" action="{{ route('admin.users.admin.destroy', $user->id) }}" method="POST" class="d-none">
+                                                @csrf
+                                                @method('DELETE')
+                                            </form>
                                         @endif
-                                    </div>
-
-                                    <!-- Delete Modal -->
-                                    <div class="modal fade" id="deleteModal{{ $user->id }}" tabindex="-1">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">Konfirmasi Hapus</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <p>Apakah Anda yakin ingin menghapus admin <strong>{{ $user->name }}</strong>?</p>
-                                                    <div class="alert alert-warning mb-0">
-                                                        <i class="bi bi-exclamation-triangle me-1"></i>
-                                                        Tindakan ini tidak dapat dibatalkan.
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                                    <form action="{{ route('admin.users.admin.destroy', $user->id) }}" method="POST" class="d-inline">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="btn btn-danger">Hapus</button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </div>
                                 </td>
                             </tr>

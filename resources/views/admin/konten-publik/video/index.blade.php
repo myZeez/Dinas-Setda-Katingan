@@ -195,9 +195,21 @@
 @push('scripts')
 <script>
     function confirmDelete(id) {
-        if (confirm('Apakah Anda yakin ingin menghapus video ini?')) {
-            document.getElementById('delete-form-' + id).submit();
-        }
+        Swal.fire({
+            title: 'Hapus Video?',
+            text: 'Video ini akan dihapus permanen!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: '<i class="bi bi-trash me-1"></i> Ya, Hapus!',
+            cancelButtonText: 'Batal',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('delete-form-' + id).submit();
+            }
+        });
     }
 
     function playVideo(youtubeId, title) {
