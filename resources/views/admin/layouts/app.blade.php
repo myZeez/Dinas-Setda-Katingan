@@ -676,6 +676,18 @@
                         <span>Log Aktivitas</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.passport.index') }}" class="nav-link {{ request()->routeIs('admin.passport.*') ? 'active' : '' }}">
+                        <i class="bi bi-key-fill"></i>
+                        <span>Passport Monitor</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/api/documentation" class="nav-link" target="_blank">
+                        <i class="bi bi-file-earmark-code"></i>
+                        <span>Dokumentasi API</span>
+                    </a>
+                </li>
             </ul>
             @endif
 

@@ -1,0 +1,1966 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API Dinas Sekretariat Daerah Katingan",
+        "description": "Dokumentasi API untuk sistem layanan Dinas Sekretariat Daerah Kabupaten Katingan. API ini menggunakan Laravel Passport untuk autentikasi berbasis token.",
+        "contact": {
+            "name": "Tim IT Setda Katingan",
+            "email": "admin@setda-katingan.go.id"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000",
+            "description": "API Server"
+        }
+    ],
+    "paths": {
+        "/api/user/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Login Pengguna",
+                "description": "Login untuk pengguna layanan dan mendapatkan access token",
+                "operationId": "userLogin",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "user@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Login berhasil."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "user": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "John Doe"
+                                                        },
+                                                        "email": {
+                                                            "type": "string",
+                                                            "example": "user@example.com"
+                                                        },
+                                                        "role": {
+                                                            "type": "string",
+                                                            "example": "user"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "token": {
+                                                    "type": "string",
+                                                    "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."
+                                                },
+                                                "token_type": {
+                                                    "type": "string",
+                                                    "example": "Bearer"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Kredensial tidak valid",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Email atau password salah."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Akun tidak aktif atau bukan pengguna",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Akun Anda tidak aktif."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The email field is required."
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Login Admin",
+                "description": "Login untuk administrator dan mendapatkan access token",
+                "operationId": "adminLogin",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "admin@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "admin123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Login berhasil."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "user": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "Administrator"
+                                                        },
+                                                        "email": {
+                                                            "type": "string",
+                                                            "example": "admin@example.com"
+                                                        },
+                                                        "role": {
+                                                            "type": "string",
+                                                            "example": "admin"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "token": {
+                                                    "type": "string",
+                                                    "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."
+                                                },
+                                                "token_type": {
+                                                    "type": "string",
+                                                    "example": "Bearer"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Kredensial tidak valid",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Email atau password salah."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Bukan administrator",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Akun ini bukan akun administrator."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Logout Pengguna",
+                "description": "Logout dan mencabut access token pengguna",
+                "operationId": "userLogout",
+                "responses": {
+                    "200": {
+                        "description": "Logout berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logout berhasil."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Tidak terautentikasi",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Logout Admin",
+                "description": "Logout dan mencabut access token admin",
+                "operationId": "adminLogout",
+                "responses": {
+                    "200": {
+                        "description": "Logout berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logout berhasil."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Tidak terautentikasi",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user/profile": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Profil Pengguna",
+                "description": "Mendapatkan data profil pengguna yang sedang login",
+                "operationId": "userProfile",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mendapatkan profil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "John Doe"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "user@example.com"
+                                                },
+                                                "jabatan": {
+                                                    "type": "string",
+                                                    "example": "Kepala Bagian"
+                                                },
+                                                "nip": {
+                                                    "type": "string",
+                                                    "example": "199001012020011001"
+                                                },
+                                                "nik": {
+                                                    "type": "string",
+                                                    "example": "6201010101010001"
+                                                },
+                                                "no_whatsapp": {
+                                                    "type": "string",
+                                                    "example": "081234567890"
+                                                },
+                                                "jenis_kelamin": {
+                                                    "type": "string",
+                                                    "example": "Laki-laki"
+                                                },
+                                                "instansi": {
+                                                    "type": "string",
+                                                    "example": "Dinas Komunikasi dan Informatika"
+                                                },
+                                                "biro_bagian": {
+                                                    "type": "string",
+                                                    "example": "Bagian Umum"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "user"
+                                                },
+                                                "is_active": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Tidak terautentikasi",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "User - Profile"
+                ],
+                "summary": "Update Profil",
+                "description": "Memperbarui data profil pengguna",
+                "operationId": "updateProfile",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "jabatan",
+                                    "no_whatsapp",
+                                    "jenis_kelamin",
+                                    "instansi",
+                                    "biro_bagian"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "Nama lengkap",
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "jabatan": {
+                                        "description": "Jabatan",
+                                        "type": "string",
+                                        "example": "Kepala Bagian"
+                                    },
+                                    "nip": {
+                                        "description": "NIP (opsional)",
+                                        "type": "string",
+                                        "example": "199001012020011001"
+                                    },
+                                    "no_whatsapp": {
+                                        "description": "Nomor WhatsApp",
+                                        "type": "string",
+                                        "example": "081234567890"
+                                    },
+                                    "jenis_kelamin": {
+                                        "type": "string",
+                                        "enum": [
+                                            "Laki-laki",
+                                            "Perempuan"
+                                        ],
+                                        "example": "Laki-laki"
+                                    },
+                                    "instansi": {
+                                        "type": "string",
+                                        "example": "Dinas Komunikasi dan Informatika"
+                                    },
+                                    "biro_bagian": {
+                                        "description": "Biro/Bagian/Bidang/Seksi",
+                                        "type": "string",
+                                        "example": "Bagian Umum"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Profil berhasil diperbarui",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profil berhasil diperbarui"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/User"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Tidak terautentikasi"
+                    },
+                    "422": {
+                        "description": "Validasi gagal"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/profile": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Profil Admin",
+                "description": "Mendapatkan data profil admin yang sedang login",
+                "operationId": "adminProfile",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mendapatkan profil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Administrator"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "admin@example.com"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "admin"
+                                                },
+                                                "is_active": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Tidak terautentikasi",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/test": {
+            "get": {
+                "tags": [
+                    "Public"
+                ],
+                "summary": "Test API",
+                "description": "Endpoint untuk testing apakah API berfungsi",
+                "operationId": "testApi",
+                "responses": {
+                    "200": {
+                        "description": "API berfungsi",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "API is working!"
+                                        },
+                                        "timestamp": {
+                                            "type": "string",
+                                            "example": "2025-12-01 12:00:00"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/dashboard": {
+            "get": {
+                "tags": [
+                    "User - Dashboard"
+                ],
+                "summary": "Dashboard Pengguna",
+                "description": "Mendapatkan data statistik dashboard pengguna",
+                "operationId": "userDashboard",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mendapatkan data dashboard",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "user": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "John Doe"
+                                                        },
+                                                        "email": {
+                                                            "type": "string",
+                                                            "example": "user@example.com"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "stats": {
+                                                    "properties": {
+                                                        "total_pengajuan": {
+                                                            "type": "integer",
+                                                            "example": 10
+                                                        },
+                                                        "pengajuan_diproses": {
+                                                            "type": "integer",
+                                                            "example": 3
+                                                        },
+                                                        "pengajuan_selesai": {
+                                                            "type": "integer",
+                                                            "example": 5
+                                                        },
+                                                        "pengajuan_revisi": {
+                                                            "type": "integer",
+                                                            "example": 2
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "recent_pengajuan": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/PengajuanLayanan"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Tidak terautentikasi"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user/jenis-layanan": {
+            "get": {
+                "tags": [
+                    "User - Layanan"
+                ],
+                "summary": "Daftar Jenis Layanan",
+                "description": "Mendapatkan daftar jenis layanan yang tersedia",
+                "operationId": "getJenisLayanan",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mendapatkan daftar jenis layanan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/JenisLayanan"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Tidak terautentikasi"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user/contoh-dokumen": {
+            "get": {
+                "tags": [
+                    "User - Layanan"
+                ],
+                "summary": "Daftar Contoh Dokumen",
+                "description": "Mendapatkan daftar contoh/template dokumen yang tersedia untuk didownload",
+                "operationId": "getContohDokumen",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mendapatkan daftar contoh dokumen",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ContohDokumen"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Tidak terautentikasi"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user/pengajuan": {
+            "get": {
+                "tags": [
+                    "User - Layanan"
+                ],
+                "summary": "Riwayat Pengajuan",
+                "description": "Mendapatkan daftar riwayat pengajuan layanan pengguna",
+                "operationId": "getPengajuan",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter berdasarkan status",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "menunggu_review_sp",
+                                "sp_revisi",
+                                "sp_disetujui",
+                                "menunggu_review_kak",
+                                "kak_revisi",
+                                "kak_disetujui",
+                                "dokumen_lengkap",
+                                "selesai",
+                                "ditolak"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Cari berdasarkan nomor pengajuan, nama pihak, atau tentang",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Halaman",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Jumlah data per halaman",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mendapatkan riwayat pengajuan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/PengajuanLayanan"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/PaginationMeta"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Tidak terautentikasi"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "User - Layanan"
+                ],
+                "summary": "Buat Pengajuan Baru",
+                "description": "Membuat pengajuan layanan baru dengan upload Surat Penawaran",
+                "operationId": "createPengajuan",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "jenis_layanan_kode",
+                                    "nama_pihak",
+                                    "tentang",
+                                    "surat_penawaran"
+                                ],
+                                "properties": {
+                                    "jenis_layanan_kode": {
+                                        "description": "Kode jenis layanan",
+                                        "type": "string",
+                                        "example": "konsultasi-produk-hukum"
+                                    },
+                                    "nama_pihak": {
+                                        "description": "Nama daerah/pihak ketiga",
+                                        "type": "string",
+                                        "example": "PEMERINTAH KABUPATEN KATINGAN"
+                                    },
+                                    "tentang": {
+                                        "description": "Tentang kerja sama",
+                                        "type": "string",
+                                        "example": "KERJA SAMA BIDANG HUKUM"
+                                    },
+                                    "instansi_terkait": {
+                                        "description": "Instansi terkait (opsional)",
+                                        "type": "string",
+                                        "example": "DINAS KOMINFO"
+                                    },
+                                    "surat_penawaran": {
+                                        "description": "File Surat Penawaran (PDF, max 5MB)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Pengajuan berhasil dibuat",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Pengajuan berhasil dibuat"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/PengajuanLayanan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Tidak terautentikasi"
+                    },
+                    "422": {
+                        "description": "Validasi gagal"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user/pengajuan/{id}": {
+            "get": {
+                "tags": [
+                    "User - Layanan"
+                ],
+                "summary": "Detail Pengajuan",
+                "description": "Mendapatkan detail pengajuan beserta dokumen dan log",
+                "operationId": "getPengajuanDetail",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Pengajuan",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mendapatkan detail pengajuan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/PengajuanLayanan"
+                                                },
+                                                {
+                                                    "properties": {
+                                                        "jenis_layanan": {
+                                                            "$ref": "#/components/schemas/JenisLayanan"
+                                                        },
+                                                        "dokumens": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/components/schemas/DokumenLayanan"
+                                                            }
+                                                        },
+                                                        "logs": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "status": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "keterangan": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "created_at": {
+                                                                        "type": "string",
+                                                                        "format": "date-time"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Tidak terautentikasi"
+                    },
+                    "404": {
+                        "description": "Pengajuan tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user/pengajuan/{id}/reupload-sp": {
+            "post": {
+                "tags": [
+                    "User - Layanan"
+                ],
+                "summary": "Upload Ulang Surat Penawaran",
+                "description": "Upload ulang Surat Penawaran jika diminta revisi oleh admin",
+                "operationId": "reuploadSuratPenawaran",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Pengajuan",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "surat_penawaran"
+                                ],
+                                "properties": {
+                                    "surat_penawaran": {
+                                        "description": "File Surat Penawaran (PDF, max 5MB)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Surat Penawaran berhasil diupload ulang",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Surat Penawaran berhasil diupload ulang"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/PengajuanLayanan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Status tidak valid untuk reupload"
+                    },
+                    "401": {
+                        "description": "Tidak terautentikasi"
+                    },
+                    "404": {
+                        "description": "Pengajuan tidak ditemukan"
+                    },
+                    "422": {
+                        "description": "Validasi gagal"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user/pengajuan/{id}/upload-kak": {
+            "post": {
+                "tags": [
+                    "User - Layanan"
+                ],
+                "summary": "Upload KAK",
+                "description": "Upload Kerangka Acuan Kerja (KAK) setelah Surat Penawaran disetujui",
+                "operationId": "uploadKAK",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Pengajuan",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "file_kak"
+                                ],
+                                "properties": {
+                                    "file_kak": {
+                                        "description": "File KAK (PDF, max 5MB)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "KAK berhasil diupload",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "KAK berhasil diupload"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/PengajuanLayanan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Status tidak valid untuk upload KAK"
+                    },
+                    "401": {
+                        "description": "Tidak terautentikasi"
+                    },
+                    "404": {
+                        "description": "Pengajuan tidak ditemukan"
+                    },
+                    "422": {
+                        "description": "Validasi gagal"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user/pengajuan/{id}/upload-nota": {
+            "post": {
+                "tags": [
+                    "User - Layanan"
+                ],
+                "summary": "Upload Link Nota Kesepakatan",
+                "description": "Submit link Nota Kesepakatan setelah KAK disetujui",
+                "operationId": "uploadNotaKesepakatan",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Pengajuan",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "link_nota_kesepakatan"
+                                ],
+                                "properties": {
+                                    "link_nota_kesepakatan": {
+                                        "description": "Link ke dokumen Nota Kesepakatan",
+                                        "type": "string",
+                                        "format": "url",
+                                        "example": "https://drive.google.com/file/d/xxx/view"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Link Nota Kesepakatan berhasil disubmit",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Link Nota Kesepakatan berhasil disubmit"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/PengajuanLayanan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "KAK belum disetujui"
+                    },
+                    "401": {
+                        "description": "Tidak terautentikasi"
+                    },
+                    "404": {
+                        "description": "Pengajuan tidak ditemukan"
+                    },
+                    "422": {
+                        "description": "Validasi gagal"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user/profile/password": {
+            "put": {
+                "tags": [
+                    "User - Profile"
+                ],
+                "summary": "Update Password",
+                "description": "Memperbarui password pengguna",
+                "operationId": "updatePassword",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "current_password",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "current_password": {
+                                        "description": "Password saat ini",
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "oldpassword123"
+                                    },
+                                    "password": {
+                                        "description": "Password baru (min 6 karakter)",
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "newpassword123"
+                                    },
+                                    "password_confirmation": {
+                                        "description": "Konfirmasi password baru",
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "newpassword123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password berhasil diperbarui",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Password berhasil diperbarui"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Password saat ini tidak sesuai"
+                    },
+                    "401": {
+                        "description": "Tidak terautentikasi"
+                    },
+                    "422": {
+                        "description": "Validasi gagal"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user/contoh-dokumen/{id}/download": {
+            "get": {
+                "tags": [
+                    "User - Layanan"
+                ],
+                "summary": "Download Contoh Dokumen",
+                "description": "Download file contoh/template dokumen",
+                "operationId": "downloadContohDokumen",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Contoh Dokumen",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "File download",
+                        "content": {
+                            "application/octet-stream": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Tidak terautentikasi"
+                    },
+                    "404": {
+                        "description": "File tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "JenisLayanan": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "nama": {
+                        "type": "string",
+                        "example": "Konsultasi Penyusunan Produk Hukum Daerah"
+                    },
+                    "kode": {
+                        "type": "string",
+                        "example": "konsultasi-produk-hukum"
+                    },
+                    "deskripsi": {
+                        "type": "string",
+                        "example": "Layanan konsultasi untuk penyusunan produk hukum daerah"
+                    },
+                    "persyaratan": {
+                        "type": "string",
+                        "example": "1. Surat Permohonan\\n2. Draft Dokumen"
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "PengajuanLayanan": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "nomor_pengajuan": {
+                        "type": "string",
+                        "example": "PL-2025-0001"
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "jenis_layanan_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "perihal": {
+                        "type": "string",
+                        "example": "Konsultasi Penyusunan Perda"
+                    },
+                    "keterangan": {
+                        "type": "string",
+                        "example": "Mohon konsultasi terkait penyusunan Perda tentang..."
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "menunggu_review_sp",
+                            "revisi_sp",
+                            "menunggu_upload_kak",
+                            "menunggu_review_kak",
+                            "revisi_kak",
+                            "menunggu_upload_nota",
+                            "diproses",
+                            "selesai",
+                            "ditolak"
+                        ],
+                        "example": "diproses"
+                    },
+                    "catatan_admin": {
+                        "type": "string",
+                        "example": "Dokumen sudah lengkap"
+                    },
+                    "tanggal_pengajuan": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2025-12-01"
+                    },
+                    "tanggal_selesai": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2025-12-15"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "DokumenLayanan": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "pengajuan_layanan_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "jenis_dokumen": {
+                        "type": "string",
+                        "enum": [
+                            "surat_penawaran",
+                            "kak",
+                            "nota_kesepakatan",
+                            "dokumen_hasil"
+                        ],
+                        "example": "surat_penawaran"
+                    },
+                    "nama_file": {
+                        "type": "string",
+                        "example": "surat_penawaran.pdf"
+                    },
+                    "path_file": {
+                        "type": "string",
+                        "example": "dokumen_layanan/surat_penawaran.pdf"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "pending",
+                            "approved",
+                            "rejected"
+                        ],
+                        "example": "approved"
+                    },
+                    "catatan": {
+                        "type": "string",
+                        "example": "Dokumen sudah sesuai"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "User": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "John Doe"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "user@example.com"
+                    },
+                    "jabatan": {
+                        "type": "string",
+                        "example": "Kepala Bagian"
+                    },
+                    "nip": {
+                        "type": "string",
+                        "example": "199001012020011001"
+                    },
+                    "nik": {
+                        "type": "string",
+                        "example": "6201010101010001"
+                    },
+                    "no_whatsapp": {
+                        "type": "string",
+                        "example": "081234567890"
+                    },
+                    "jenis_kelamin": {
+                        "type": "string",
+                        "enum": [
+                            "Laki-laki",
+                            "Perempuan"
+                        ],
+                        "example": "Laki-laki"
+                    },
+                    "instansi": {
+                        "type": "string",
+                        "example": "Dinas Komunikasi dan Informatika"
+                    },
+                    "biro_bagian": {
+                        "type": "string",
+                        "example": "Bagian Umum"
+                    },
+                    "role": {
+                        "type": "string",
+                        "enum": [
+                            "user",
+                            "admin",
+                            "super_admin"
+                        ],
+                        "example": "user"
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "Berita": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "judul": {
+                        "type": "string",
+                        "example": "Rapat Koordinasi Penyusunan RPJMD"
+                    },
+                    "slug": {
+                        "type": "string",
+                        "example": "rapat-koordinasi-penyusunan-rpjmd"
+                    },
+                    "ringkasan": {
+                        "type": "string",
+                        "example": "Dinas Setda menggelar rapat koordinasi..."
+                    },
+                    "konten": {
+                        "type": "string",
+                        "example": "<p>Isi berita lengkap...</p>"
+                    },
+                    "gambar": {
+                        "type": "string",
+                        "example": "berita/gambar.jpg"
+                    },
+                    "penulis": {
+                        "type": "string",
+                        "example": "Admin"
+                    },
+                    "is_published": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "published_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "ContohDokumen": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "nama": {
+                        "type": "string",
+                        "example": "Template Surat Penawaran"
+                    },
+                    "deskripsi": {
+                        "type": "string",
+                        "example": "Template untuk surat penawaran layanan"
+                    },
+                    "jenis_dokumen": {
+                        "type": "string",
+                        "enum": [
+                            "surat_penawaran",
+                            "kak",
+                            "nota_kesepakatan"
+                        ],
+                        "example": "surat_penawaran"
+                    },
+                    "file_path": {
+                        "type": "string",
+                        "example": "contoh_dokumen/template_sp.docx"
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "ErrorResponse": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Error message"
+                    }
+                },
+                "type": "object"
+            },
+            "ValidationError": {
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "The given data was invalid."
+                    },
+                    "errors": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "PaginationMeta": {
+                "properties": {
+                    "current_page": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "from": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "last_page": {
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "per_page": {
+                        "type": "integer",
+                        "example": 15
+                    },
+                    "to": {
+                        "type": "integer",
+                        "example": 15
+                    },
+                    "total": {
+                        "type": "integer",
+                        "example": 150
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "Masukkan token yang didapat dari endpoint login. Format: Bearer {token}",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "User - Dashboard",
+            "description": "Endpoint untuk dashboard pengguna"
+        },
+        {
+            "name": "User - Layanan",
+            "description": "Endpoint untuk layanan dan pengajuan"
+        },
+        {
+            "name": "User - Profile",
+            "description": "Endpoint untuk profil pengguna"
+        },
+        {
+            "name": "Authentication",
+            "description": "Endpoint untuk autentikasi pengguna (login, logout, register)"
+        },
+        {
+            "name": "User",
+            "description": "Endpoint untuk pengguna layanan"
+        },
+        {
+            "name": "Admin",
+            "description": "Endpoint untuk administrator"
+        },
+        {
+            "name": "Public",
+            "description": "Endpoint publik tanpa autentikasi"
+        }
+    ]
+}

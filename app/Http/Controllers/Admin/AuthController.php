@@ -24,7 +24,15 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials, $request->remember)) {
+            $user = Auth::user();
+
+            // Create Passport token
+            $token = $user->createToken('AdminAccessToken')->accessToken;
+
+            // Store token in session for web usage
+            $request->session()->put('api_token', $token);
             $request->session()->regenerate();
+
             return redirect()->intended(route('admin.dashboard'));
         }
 
@@ -33,12 +41,89 @@ class AuthController extends Controller
         ])->onlyInput('email');
     }
 
+    /**
+     * API Login - Returns token for API access
+     */
+    public function apiLogin(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|min:6',
+        ]);
+
+        if (!Auth::attempt($credentials)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email atau password salah.',
+            ], 401);
+        }
+
+        $user = Auth::user();
+
+        if (!in_array($user->role, ['admin', 'super_admin'])) {
+            Auth::logout();
+            return response()->json([
+                'success' => false,
+                'message' => 'Akun ini bukan akun administrator.',
+            ], 403);
+        }
+
+        // Create Passport token
+        $token = $user->createToken('AdminAccessToken')->accessToken;
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Login berhasil.',
+            'data' => [
+                'user' => $user,
+                'token' => $token,
+                'token_type' => 'Bearer',
+            ],
+        ]);
+    }
+
     public function logout(Request $request)
     {
+        $user = Auth::user();
+
+        // Revoke all tokens
+        if ($user) {
+            $user->tokens()->delete();
+        }
+
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         return redirect()->route('admin.login');
+    }
+
+    /**
+     * API Logout - Revoke token
+     */
+    public function apiLogout(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user) {
+            // Revoke current token
+            $user->token()->revoke();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Logout berhasil.',
+        ]);
+    }
+
+    /**
+     * Get current authenticated admin profile (API)
+     */
+    public function profile(Request $request)
+    {
+        return response()->json([
+            'success' => true,
+            'data' => $request->user(),
+        ]);
     }
 }

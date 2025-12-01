@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\KontenPublikController;
 use App\Http\Controllers\Admin\ContohDokumenController;
+use App\Http\Controllers\Admin\PassportController;
 use App\Http\Controllers\User\AuthController as UserAuthController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\User\LayananController;
@@ -156,6 +157,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
             // Toggle Status (both admin and user)
             Route::patch('/users/{id}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
+
+            // Passport Monitor
+            Route::get('/passport', [PassportController::class, 'index'])->name('passport.index');
+            Route::get('/passport/user/{userId}', [PassportController::class, 'userTokens'])->name('passport.user-tokens');
+            Route::post('/passport/revoke/{tokenId}', [PassportController::class, 'revokeToken'])->name('passport.revoke');
+            Route::post('/passport/revoke-user/{userId}', [PassportController::class, 'revokeUserTokens'])->name('passport.revoke-user');
+            Route::post('/passport/revoke-expired', [PassportController::class, 'revokeExpiredTokens'])->name('passport.revoke-expired');
+            Route::post('/passport/cleanup', [PassportController::class, 'cleanupTokens'])->name('passport.cleanup');
         });
     });
 });

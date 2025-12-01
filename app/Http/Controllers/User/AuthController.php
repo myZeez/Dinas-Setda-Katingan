@@ -50,13 +50,68 @@ class AuthController extends Controller
                 ])->onlyInput('email');
             }
 
+            // Create Passport token
+            $token = $user->createToken('UserAccessToken')->accessToken;
+
+            // Store token in session for web usage
+            $request->session()->put('api_token', $token);
             $request->session()->regenerate();
+
             return redirect()->intended(route('user.dashboard'));
         }
 
         return back()->withErrors([
             'email' => 'Email atau password salah.',
         ])->onlyInput('email');
+    }
+
+    /**
+     * API Login - Returns token for API access
+     */
+    public function apiLogin(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|min:6',
+        ]);
+
+        if (!Auth::attempt($credentials)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email atau password salah.',
+            ], 401);
+        }
+
+        $user = Auth::user();
+
+        if ($user->role !== 'user') {
+            Auth::logout();
+            return response()->json([
+                'success' => false,
+                'message' => 'Akun ini bukan akun pengguna layanan.',
+            ], 403);
+        }
+
+        if (!$user->is_active) {
+            Auth::logout();
+            return response()->json([
+                'success' => false,
+                'message' => 'Akun Anda tidak aktif. Silakan hubungi administrator.',
+            ], 403);
+        }
+
+        // Create Passport token
+        $token = $user->createToken('UserAccessToken')->accessToken;
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Login berhasil.',
+            'data' => [
+                'user' => $user,
+                'token' => $token,
+                'token_type' => 'Bearer',
+            ],
+        ]);
     }
 
     /**
@@ -118,6 +173,10 @@ class AuthController extends Controller
 
         Auth::login($user);
 
+        // Create Passport token for new user
+        $token = $user->createToken('UserAccessToken')->accessToken;
+        $request->session()->put('api_token', $token);
+
         return redirect()->route('user.dashboard')->with('success', 'Selamat! Akun Anda berhasil dibuat.');
     }
 
@@ -126,10 +185,46 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
+        $user = Auth::user();
+
+        // Revoke all tokens
+        if ($user) {
+            $user->tokens()->delete();
+        }
+
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         return redirect()->route('user.login');
+    }
+
+    /**
+     * API Logout - Revoke token
+     */
+    public function apiLogout(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user) {
+            // Revoke current token
+            $user->token()->revoke();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Logout berhasil.',
+        ]);
+    }
+
+    /**
+     * Get current authenticated user profile (API)
+     */
+    public function profile(Request $request)
+    {
+        return response()->json([
+            'success' => true,
+            'data' => $request->user(),
+        ]);
     }
 }
