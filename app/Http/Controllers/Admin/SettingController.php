@@ -102,6 +102,9 @@ class SettingController extends Controller
             'social_twitter' => 'nullable|url|max:255',
             'social_youtube' => 'nullable|url|max:255',
             'maps_embed' => 'nullable|string',
+            'visi' => 'nullable|string|max:1000',
+            'misi' => 'nullable|array',
+            'misi.*' => 'nullable|string|max:500',
         ]);
 
         // Handle logo upload
@@ -126,7 +129,17 @@ class SettingController extends Controller
             $validated['site_favicon'] = $file->storeAs('settings', $fileName, 'public');
         }
 
+        // Filter empty misi
+        if (isset($validated['misi']) && is_array($validated['misi'])) {
+            $validated['misi'] = array_values(array_filter($validated['misi'], function($item) {
+                return !empty(trim($item));
+            }));
+        }
+
         $this->saveSettings($validated);
+
+        // Clear SettingHelper cache
+        \App\Helpers\SettingHelper::clearCache();
 
         return back()->with('success', 'Pengaturan website berhasil diperbarui.');
     }
@@ -178,6 +191,16 @@ class SettingController extends Controller
             'social_twitter' => '',
             'social_youtube' => '',
             'maps_embed' => '',
+            'visi' => '"Terwujudnya Kabupaten Katingan yang Maju, Sejahtera, Berkeadilan dan Berakhlak Mulia"',
+            'misi' => [
+                'Mewujudkan suasana kehidupan yang rukun, aman, damai dan sejahtera',
+                'Mewujudkan kehidupan masyarakat yang religius dan harmonis',
+                'Mewujudkan kualitas sumber daya manusia yang handal dan berdaya saing',
+                'Mewujudkan tingkat kesehatan masyarakat yang baik dan memenuhi standar',
+                'Mewujudkan pelayanan publik yang memuaskan dan membahagiakan',
+                'Mewujudkan infrastruktur yang baik dan mantap',
+                'Mewujudkan kenyamanan dalam berusaha dan berinvestasi',
+            ],
         ];
     }
 }

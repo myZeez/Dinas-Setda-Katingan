@@ -148,6 +148,49 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Visi & Misi -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex align-items-center gap-2">
+                        <i class="bi bi-bullseye text-danger"></i>
+                        <h5 class="mb-0">Visi & Misi</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="visi" class="form-label">Visi</label>
+                            <textarea class="form-control" id="visi" name="visi" rows="3"
+                                placeholder='Contoh: "Terwujudnya Kabupaten Katingan yang Maju, Sejahtera, Berkeadilan dan Berakhlak Mulia"'>{{ old('visi', $settings['visi'] ?? '') }}</textarea>
+                            <div class="form-text">Visi Kabupaten Katingan</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Misi</label>
+                            <div id="misi-container">
+                                @php
+                                    $misiList = old('misi', $settings['misi'] ?? []);
+                                    if (empty($misiList)) {
+                                        $misiList = [''];
+                                    }
+                                @endphp
+                                @foreach($misiList as $index => $misi)
+                                <div class="misi-item mb-2">
+                                    <div class="input-group">
+                                        <span class="input-group-text">{{ $index + 1 }}</span>
+                                        <input type="text" class="form-control" name="misi[]"
+                                            value="{{ $misi }}"
+                                            placeholder="Masukkan misi ke-{{ $index + 1 }}">
+                                        <button type="button" class="btn btn-outline-danger btn-remove-misi" onclick="removeMisi(this)">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addMisi()">
+                                <i class="bi bi-plus-circle me-1"></i> Tambah Misi
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Sidebar -->
@@ -309,5 +352,56 @@
             reader.readAsDataURL(file);
         }
     });
+
+    // Add new misi field
+    function addMisi() {
+        const container = document.getElementById('misi-container');
+        const count = container.querySelectorAll('.misi-item').length + 1;
+
+        const newItem = document.createElement('div');
+        newItem.className = 'misi-item mb-2';
+        newItem.innerHTML = `
+            <div class="input-group">
+                <span class="input-group-text">${count}</span>
+                <input type="text" class="form-control" name="misi[]"
+                    placeholder="Masukkan misi ke-${count}">
+                <button type="button" class="btn btn-outline-danger btn-remove-misi" onclick="removeMisi(this)">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        `;
+
+        container.appendChild(newItem);
+        updateMisiNumbers();
+    }
+
+    // Remove misi field
+    function removeMisi(button) {
+        const container = document.getElementById('misi-container');
+        const items = container.querySelectorAll('.misi-item');
+
+        // Don't allow removing if only one item left
+        if (items.length <= 1) {
+            alert('Minimal harus ada 1 misi');
+            return;
+        }
+
+        button.closest('.misi-item').remove();
+        updateMisiNumbers();
+    }
+
+    // Update misi numbers
+    function updateMisiNumbers() {
+        const container = document.getElementById('misi-container');
+        const items = container.querySelectorAll('.misi-item');
+
+        items.forEach((item, index) => {
+            const number = item.querySelector('.input-group-text');
+            const input = item.querySelector('input');
+
+            number.textContent = index + 1;
+            input.placeholder = `Masukkan misi ke-${index + 1}`;
+        });
+    }
 </script>
 @endpush

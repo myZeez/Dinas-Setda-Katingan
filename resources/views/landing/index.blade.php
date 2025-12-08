@@ -178,22 +178,33 @@
                 <div class="visi-misi-card">
                     <h3><i class="bi bi-bullseye"></i> VISI</h3>
                     <p class="fs-5 fw-medium" style="line-height: 1.8;">
-                        "Terwujudnya Kabupaten Katingan yang Maju, Sejahtera, Berkeadilan dan Berakhlak Mulia"
+                        {!! \App\Helpers\SettingHelper::visi() !!}
                     </p>
                 </div>
             </div>
             <div class="col-lg-6" data-aos="fade-left">
                 <div class="visi-misi-card">
                     <h3><i class="bi bi-flag"></i> MISI</h3>
-                    <ol class="ps-3" style="line-height: 2;">
-                        <li>Mewujudkan suasana kehidupan yang rukun, aman, damai dan sejahtera</li>
-                        <li>Mewujudkan kehidupan masyarakat yang religius dan harmonis</li>
-                        <li>Mewujudkan kualitas sumber daya manusia yang handal dan berdaya saing</li>
-                        <li>Mewujudkan tingkat kesehatan masyarakat yang baik dan memenuhi standar</li>
-                        <li>Mewujudkan pelayanan publik yang memuaskan dan membahagiakan</li>
-                        <li>Mewujudkan infrastruktur yang baik dan mantap</li>
-                        <li>Mewujudkan kenyamanan dalam berusaha dan berinvestasi</li>
-                    </ol>
+                    @php
+                        $misiList = \App\Helpers\SettingHelper::misi();
+                    @endphp
+                    @if(count($misiList) > 0)
+                        <ol class="ps-3" style="line-height: 2;">
+                            @foreach($misiList as $misi)
+                                <li>{{ $misi }}</li>
+                            @endforeach
+                        </ol>
+                    @else
+                        <ol class="ps-3" style="line-height: 2;">
+                            <li>Mewujudkan suasana kehidupan yang rukun, aman, damai dan sejahtera</li>
+                            <li>Mewujudkan kehidupan masyarakat yang religius dan harmonis</li>
+                            <li>Mewujudkan kualitas sumber daya manusia yang handal dan berdaya saing</li>
+                            <li>Mewujudkan tingkat kesehatan masyarakat yang baik dan memenuhi standar</li>
+                            <li>Mewujudkan pelayanan publik yang memuaskan dan membahagiakan</li>
+                            <li>Mewujudkan infrastruktur yang baik dan mantap</li>
+                            <li>Mewujudkan kenyamanan dalam berusaha dan berinvestasi</li>
+                        </ol>
+                    @endif
                 </div>
             </div>
         </div>
@@ -379,6 +390,131 @@
         </div>
     </div>
 </section>
+
+<!-- Informasi Publik Section -->
+@if($kategoriPemerintahan || $kategoriKewilayahan || $kategoriKerjaSama)
+<section class="section section-light" id="informasi-publik">
+    <div class="container">
+        <div class="section-header text-center" data-aos="fade-up">
+            <h2>Informasi <span class="highlight">Publik</span></h2>
+            <p class="mx-auto">Akses dokumen dan informasi publik dari Sekretariat Daerah Kabupaten Katingan</p>
+        </div>
+
+        <div class="row g-4">
+            @if($kategoriPemerintahan)
+            <!-- Informasi Bag. Pemerintahan -->
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="info-category-card">
+                    <div class="info-category-header">
+                        <i class="{{ $kategoriPemerintahan->icon ?? 'bi-file-earmark-text' }} info-category-icon"></i>
+                        <h3 class="info-category-title">{{ $kategoriPemerintahan->nama }}</h3>
+                        <p class="info-category-desc">{{ $kategoriPemerintahan->deskripsi }}</p>
+                    </div>
+                    <div class="info-category-body">
+                        @if($infoPemerintahan->count() > 0)
+                            <ul class="info-list">
+                                @foreach($infoPemerintahan as $info)
+                                <li class="info-item">
+                                    <i class="bi bi-file-earmark-pdf text-danger"></i>
+                                    <div class="info-item-content">
+                                        <a href="{{ route('landing.informasi.detail', [$kategoriPemerintahan->slug, $info->id]) }}" class="info-item-title">
+                                            {{ Str::limit($info->judul, 60) }}
+                                        </a>
+                                        <span class="info-item-meta">{{ $info->tanggal ? $info->tanggal->format('d M Y') : '-' }}</span>
+                                    </div>
+                                </li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <p class="text-muted text-center py-3"><small>Belum ada dokumen tersedia</small></p>
+                        @endif
+                    </div>
+                    <div class="info-category-footer">
+                        <a href="{{ route('landing.informasi', $kategoriPemerintahan->slug) }}" class="btn-view-all">
+                            Lihat Semua Dokumen <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            @endif
+
+            @if($kategoriKewilayahan)
+            <!-- Informasi Kewilayahan -->
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="info-category-card">
+                    <div class="info-category-header">
+                        <i class="{{ $kategoriKewilayahan->icon ?? 'bi-geo-alt' }} info-category-icon"></i>
+                        <h3 class="info-category-title">{{ $kategoriKewilayahan->nama }}</h3>
+                        <p class="info-category-desc">{{ $kategoriKewilayahan->deskripsi }}</p>
+                    </div>
+                    <div class="info-category-body">
+                        @if($infoKewilayahan->count() > 0)
+                            <ul class="info-list">
+                                @foreach($infoKewilayahan as $info)
+                                <li class="info-item">
+                                    <i class="bi bi-file-earmark-pdf text-danger"></i>
+                                    <div class="info-item-content">
+                                        <a href="{{ route('landing.informasi.detail', [$kategoriKewilayahan->slug, $info->id]) }}" class="info-item-title">
+                                            {{ Str::limit($info->judul, 60) }}
+                                        </a>
+                                        <span class="info-item-meta">{{ $info->tanggal ? $info->tanggal->format('d M Y') : '-' }}</span>
+                                    </div>
+                                </li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <p class="text-muted text-center py-3"><small>Belum ada dokumen tersedia</small></p>
+                        @endif
+                    </div>
+                    <div class="info-category-footer">
+                        <a href="{{ route('landing.informasi', $kategoriKewilayahan->slug) }}" class="btn-view-all">
+                            Lihat Semua Dokumen <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            @endif
+
+            @if($kategoriKerjaSama)
+            <!-- Informasi Kerja Sama -->
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="info-category-card">
+                    <div class="info-category-header">
+                        <i class="{{ $kategoriKerjaSama->icon ?? 'bi-handshake' }} info-category-icon"></i>
+                        <h3 class="info-category-title">{{ $kategoriKerjaSama->nama }}</h3>
+                        <p class="info-category-desc">{{ $kategoriKerjaSama->deskripsi }}</p>
+                    </div>
+                    <div class="info-category-body">
+                        @if($infoKerjaSama->count() > 0)
+                            <ul class="info-list">
+                                @foreach($infoKerjaSama as $info)
+                                <li class="info-item">
+                                    <i class="bi bi-file-earmark-pdf text-danger"></i>
+                                    <div class="info-item-content">
+                                        <a href="{{ route('landing.informasi.detail', [$kategoriKerjaSama->slug, $info->id]) }}" class="info-item-title">
+                                            {{ Str::limit($info->judul, 60) }}
+                                        </a>
+                                        <span class="info-item-meta">{{ $info->tanggal ? $info->tanggal->format('d M Y') : '-' }}</span>
+                                    </div>
+                                </li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <p class="text-muted text-center py-3"><small>Belum ada dokumen tersedia</small></p>
+                        @endif
+                    </div>
+                    <div class="info-category-footer">
+                        <a href="{{ route('landing.informasi', $kategoriKerjaSama->slug) }}" class="btn-view-all">
+                            Lihat Semua Dokumen <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            @endif
+        </div>
+    </div>
+</section>
+@endif
 
 <!-- Visitor Statistics Section -->
 <section class="section visitor-stats-section" id="statistik-pengunjung">
@@ -765,6 +901,7 @@
     const videoSwiperEl = document.querySelector('.videoSwiper');
     if (videoSwiperEl) {
         let videoAutoPlayTimer = null;
+        let isVideoSectionVisible = false;
         const videoSlideCount = videoSwiperEl.querySelectorAll('.swiper-slide').length;
 
         // Need at least 5 slides for loop with slidesPerView 2.2
@@ -798,7 +935,7 @@
                         if (slideIndex === swiper.activeIndex) {
                             // Clicked on active slide - play video
                             const videoCard = clickedSlide.querySelector('.video-card');
-                            if (videoCard && !videoCard.classList.contains('playing')) {
+                            if (videoCard && !videoCard.classList.contains('playing') && isVideoSectionVisible) {
                                 playVideo(videoCard);
                             }
                         } else {
@@ -821,6 +958,8 @@
         });
 
         function playVideo(videoCard) {
+            if (!isVideoSectionVisible) return; // Don't play if section not visible
+
             stopAllVideos();
 
             const videoId = videoCard.dataset.videoId;
@@ -832,12 +971,14 @@
             // Auto advance after 30 seconds
             clearTimeout(videoAutoPlayTimer);
             videoAutoPlayTimer = setTimeout(() => {
-                videoSwiper.slideNext();
-                setTimeout(() => {
-                    const activeSlide = videoSwiper.slides[videoSwiper.activeIndex];
-                    const activeCard = activeSlide?.querySelector('.video-card');
-                    if (activeCard) playVideo(activeCard);
-                }, 700);
+                if (isVideoSectionVisible) { // Only auto-advance if still visible
+                    videoSwiper.slideNext();
+                    setTimeout(() => {
+                        const activeSlide = videoSwiper.slides[videoSwiper.activeIndex];
+                        const activeCard = activeSlide?.querySelector('.video-card');
+                        if (activeCard && isVideoSectionVisible) playVideo(activeCard);
+                    }, 700);
+                }
             }, 30000);
         }
 
@@ -850,12 +991,37 @@
             });
         }
 
-        // Auto-play first video after 2 seconds
-        setTimeout(() => {
-            const activeSlide = videoSwiper.slides[videoSwiper.activeIndex];
-            const activeCard = activeSlide?.querySelector('.video-card');
-            if (activeCard) playVideo(activeCard);
-        }, 2000);
+        // Intersection Observer to detect when video section is visible
+        const videoSection = videoSwiperEl.closest('section');
+        const videoObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Video section is visible
+                    isVideoSectionVisible = true;
+
+                    // Auto-play first video after 2 seconds if not already playing
+                    setTimeout(() => {
+                        const anyPlaying = document.querySelector('.video-card.playing');
+                        if (!anyPlaying && isVideoSectionVisible) {
+                            const activeSlide = videoSwiper.slides[videoSwiper.activeIndex];
+                            const activeCard = activeSlide?.querySelector('.video-card');
+                            if (activeCard) playVideo(activeCard);
+                        }
+                    }, 2000);
+                } else {
+                    // Video section is not visible - stop all videos
+                    isVideoSectionVisible = false;
+                    stopAllVideos();
+                }
+            });
+        }, {
+            threshold: 0.3, // Trigger when 30% of section is visible
+            rootMargin: '0px'
+        });
+
+        if (videoSection) {
+            videoObserver.observe(videoSection);
+        }
     }
 
     // Counter Animation

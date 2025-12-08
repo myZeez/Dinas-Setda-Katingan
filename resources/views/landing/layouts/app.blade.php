@@ -1317,6 +1317,143 @@
         }
 
         /* ============================================
+           INFORMASI PUBLIK SECTION
+        ============================================ */
+        .info-category-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-category-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 30px rgba(220, 38, 38, 0.15);
+        }
+
+        .info-category-header {
+            padding: 32px 24px 24px;
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .info-category-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .info-category-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .info-category-desc {
+            font-size: 13px;
+            opacity: 0.9;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .info-category-body {
+            padding: 24px;
+            flex-grow: 1;
+        }
+
+        .info-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .info-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-item i {
+            font-size: 18px;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .info-item-content {
+            flex-grow: 1;
+            min-width: 0;
+        }
+
+        .info-item-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 4px;
+            line-height: 1.5;
+            transition: color 0.2s ease;
+        }
+
+        .info-item-title:hover {
+            color: var(--primary-color);
+        }
+
+        .info-item-meta {
+            font-size: 11px;
+            color: var(--text-secondary);
+            display: block;
+        }
+
+        .info-category-footer {
+            padding: 16px 24px;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .btn-view-all {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 12px;
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-view-all:hover {
+            background: var(--primary-dark);
+            color: white;
+            transform: translateX(4px);
+        }
+
+        .btn-view-all i {
+            font-size: 16px;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-view-all:hover i {
+            transform: translateX(4px);
+        }
+
+        /* ============================================
            VISITOR STATISTICS SECTION
         ============================================ */
         .visitor-stats-section {
@@ -2095,6 +2232,59 @@
 
             .stat-label {
                 font-size: 12px;
+            }
+
+            /* Informasi Publik */
+            .info-category-card {
+                margin-bottom: 20px;
+            }
+
+            .info-category-header {
+                padding: 24px 16px 20px;
+            }
+
+            .info-category-icon {
+                font-size: 36px;
+                margin-bottom: 12px;
+            }
+
+            .info-category-title {
+                font-size: 16px;
+                margin-bottom: 8px;
+            }
+
+            .info-category-desc {
+                font-size: 12px;
+            }
+
+            .info-category-body {
+                padding: 16px;
+            }
+
+            .info-item {
+                padding: 10px 0;
+                gap: 10px;
+            }
+
+            .info-item i {
+                font-size: 16px;
+            }
+
+            .info-item-title {
+                font-size: 12px;
+            }
+
+            .info-item-meta {
+                font-size: 10px;
+            }
+
+            .info-category-footer {
+                padding: 12px 16px;
+            }
+
+            .btn-view-all {
+                padding: 10px;
+                font-size: 13px;
             }
 
             /* Video */

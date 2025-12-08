@@ -99,6 +99,28 @@ class SettingHelper
     }
 
     /**
+     * Get visi
+     */
+    public static function visi()
+    {
+        return self::get('visi', '"Terwujudnya Kabupaten Katingan yang Maju, Sejahtera, Berkeadilan dan Berakhlak Mulia"');
+    }
+
+    /**
+     * Get misi (returns array)
+     */
+    public static function misi()
+    {
+        $misi = self::get('misi', []);
+        if (is_string($misi)) {
+            // If stored as JSON string, decode it
+            $decoded = json_decode($misi, true);
+            return $decoded ?: [];
+        }
+        return is_array($misi) ? $misi : [];
+    }
+
+    /**
      * Get social media links
      */
     public static function social($platform = null)
@@ -158,6 +180,16 @@ class SettingHelper
             'social_twitter' => '',
             'social_youtube' => '',
             'maps_embed' => '',
+            'visi' => '"Terwujudnya Kabupaten Katingan yang Maju, Sejahtera, Berkeadilan dan Berakhlak Mulia"',
+            'misi' => [
+                'Mewujudkan suasana kehidupan yang rukun, aman, damai dan sejahtera',
+                'Mewujudkan kehidupan masyarakat yang religius dan harmonis',
+                'Mewujudkan kualitas sumber daya manusia yang handal dan berdaya saing',
+                'Mewujudkan tingkat kesehatan masyarakat yang baik dan memenuhi standar',
+                'Mewujudkan pelayanan publik yang memuaskan dan membahagiakan',
+                'Mewujudkan infrastruktur yang baik dan mantap',
+                'Mewujudkan kenyamanan dalam berusaha dan berinvestasi',
+            ],
         ];
     }
 

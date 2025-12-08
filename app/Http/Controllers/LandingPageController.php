@@ -70,6 +70,36 @@ class LandingPageController extends Controller
             'this_year_visitors' => Visitor::getThisYearCount(),
         ];
 
+        // Get informasi publik categories untuk landing page
+        $kategoriPemerintahan = KategoriInformasi::where('slug', 'informasi-publik-bagian-pemerintahan')->first();
+        $kategoriKewilayahan = KategoriInformasi::where('slug', 'informasi-kewilayahan')->first();
+        $kategoriKerjaSama = KategoriInformasi::where('slug', 'informasi-kerja-sama')->first();
+
+        // Get latest informasi for each category
+        $infoPemerintahan = $kategoriPemerintahan
+            ? InformasiPublik::where('kategori_informasi_id', $kategoriPemerintahan->id)
+                ->where('is_active', true)
+                ->orderBy('created_at', 'desc')
+                ->take(3)
+                ->get()
+            : collect();
+
+        $infoKewilayahan = $kategoriKewilayahan
+            ? InformasiPublik::where('kategori_informasi_id', $kategoriKewilayahan->id)
+                ->where('is_active', true)
+                ->orderBy('created_at', 'desc')
+                ->take(3)
+                ->get()
+            : collect();
+
+        $infoKerjaSama = $kategoriKerjaSama
+            ? InformasiPublik::where('kategori_informasi_id', $kategoriKerjaSama->id)
+                ->where('is_active', true)
+                ->orderBy('created_at', 'desc')
+                ->take(3)
+                ->get()
+            : collect();
+
         return view('landing.index', compact(
             'carousels',
             'beritaTerbaru',
@@ -78,7 +108,13 @@ class LandingPageController extends Controller
             'unitKerjas',
             'videos',
             'settings',
-            'visitorStats'
+            'visitorStats',
+            'kategoriPemerintahan',
+            'kategoriKewilayahan',
+            'kategoriKerjaSama',
+            'infoPemerintahan',
+            'infoKewilayahan',
+            'infoKerjaSama'
         ));
     }
 
