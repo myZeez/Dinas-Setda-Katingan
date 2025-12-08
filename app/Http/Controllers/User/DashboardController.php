@@ -13,7 +13,7 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $user = Auth::user();
+        $user = Auth::guard('user')->user();
 
         $stats = [
             'total_layanan' => 0,

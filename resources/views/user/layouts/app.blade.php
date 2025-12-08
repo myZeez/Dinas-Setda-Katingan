@@ -508,7 +508,7 @@
                 </button>
                 <div>
                     <h6 class="mb-0 fw-semibold">Selamat Datang!</h6>
-                    <small class="text-muted">{{ Auth::user()->name }}</small>
+                    <small class="text-muted">{{ Auth::guard('user')->user()->name }}</small>
                 </div>
             </div>
             <div class="header-right">
@@ -518,11 +518,11 @@
                 <div class="dropdown">
                     <div class="user-dropdown" data-bs-toggle="dropdown">
                         <div class="user-avatar">
-                            {{ substr(Auth::user()->name ?? 'U', 0, 1) }}
+                            {{ substr(Auth::guard('user')->user()->name ?? 'U', 0, 1) }}
                         </div>
                         <div class="user-info">
-                            <h6>{{ Auth::user()->name ?? 'User' }}</h6>
-                            <span>{{ Auth::user()->instansi ?? '-' }}</span>
+                            <h6>{{ Auth::guard('user')->user()->name ?? 'User' }}</h6>
+                            <span>{{ Auth::guard('user')->user()->instansi ?? '-' }}</span>
                         </div>
                         <i class="bi bi-chevron-down ms-2"></i>
                     </div>

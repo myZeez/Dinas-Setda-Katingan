@@ -85,7 +85,7 @@ class InformasiPublikController extends Controller
         ]);
 
         $validated['kategori_informasi_id'] = $kategori->id;
-        $validated['user_id'] = Auth::id();
+        $validated['user_id'] = Auth::guard('admin')->id();
 
         // Handle file dokumen
         if ($request->hasFile('file_dokumen')) {

@@ -74,7 +74,7 @@
 
                     <div class="mb-3">
                         <label class="form-label text-muted small">Penulis</label>
-                        <p class="mb-0 fw-semibold">{{ Auth::user()->nama }}</p>
+                        <p class="mb-0 fw-semibold">{{ Auth::guard('admin')->user()->name }}</p>
                     </div>
 
                     <div class="mb-3">

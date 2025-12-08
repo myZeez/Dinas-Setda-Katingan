@@ -14,13 +14,13 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!Auth::check()) {
+        if (!Auth::guard('admin')->check()) {
             return redirect()->route('admin.login')->with('error', 'Silakan login terlebih dahulu.');
         }
 
         // Check if user is admin or super_admin
-        if (!in_array(Auth::user()->role, ['admin', 'super_admin'])) {
-            Auth::logout();
+        if (!in_array(Auth::guard('admin')->user()->role, ['admin', 'super_admin'])) {
+            Auth::guard('admin')->logout();
             return redirect()->route('admin.login')->with('error', 'Akses ditolak. Anda bukan administrator.');
         }
 

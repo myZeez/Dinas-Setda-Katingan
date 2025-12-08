@@ -19,14 +19,14 @@ class EnsureTokenIsValid
     public function handle(Request $request, Closure $next): Response
     {
         // Check if user is authenticated via session
-        if (!auth()->check()) {
+        if (!auth('user')->check()) {
             return redirect()->route('user.login');
         }
 
         // Check if API token exists in session
         if (!session()->has('api_token')) {
             // Token doesn't exist, create one
-            $user = auth()->user();
+            $user = auth('user')->user();
             $token = $user->createToken('WebAccessToken')->accessToken;
             session()->put('api_token', $token);
         }

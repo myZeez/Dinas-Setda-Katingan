@@ -10,7 +10,7 @@ class AuthController extends Controller
 {
     public function showLogin()
     {
-        if (Auth::check()) {
+        if (Auth::guard('admin')->check()) {
             return redirect()->route('admin.dashboard');
         }
         return view('admin.auth.login');
@@ -23,8 +23,8 @@ class AuthController extends Controller
             'password' => 'required|min:6',
         ]);
 
-        if (Auth::attempt($credentials, $request->remember)) {
-            $user = Auth::user();
+        if (Auth::guard('admin')->attempt($credentials, $request->remember)) {
+            $user = Auth::guard('admin')->user();
 
             // Create Passport token
             $token = $user->createToken('AdminAccessToken')->accessToken;
@@ -51,17 +51,17 @@ class AuthController extends Controller
             'password' => 'required|min:6',
         ]);
 
-        if (!Auth::attempt($credentials)) {
+        if (!Auth::guard('admin')->attempt($credentials)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Email atau password salah.',
             ], 401);
         }
 
-        $user = Auth::user();
+        $user = Auth::guard('admin')->user();
 
         if (!in_array($user->role, ['admin', 'super_admin'])) {
-            Auth::logout();
+            Auth::guard('admin')->logout();
             return response()->json([
                 'success' => false,
                 'message' => 'Akun ini bukan akun administrator.',
@@ -84,14 +84,14 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $user = Auth::user();
+        $user = Auth::guard('admin')->user();
 
         // Revoke all tokens
         if ($user) {
             $user->tokens()->delete();
         }
 
-        Auth::logout();
+        Auth::guard('admin')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

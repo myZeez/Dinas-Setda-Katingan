@@ -14,17 +14,17 @@ class UserMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!Auth::check()) {
+        if (!Auth::guard('user')->check()) {
             return redirect()->route('user.login')->with('error', 'Silakan login terlebih dahulu.');
         }
 
-        if (Auth::user()->role !== 'user') {
-            Auth::logout();
+        if (Auth::guard('user')->user()->role !== 'user') {
+            Auth::guard('user')->logout();
             return redirect()->route('user.login')->with('error', 'Akses ditolak.');
         }
 
-        if (!Auth::user()->is_active) {
-            Auth::logout();
+        if (!Auth::guard('user')->user()->is_active) {
+            Auth::guard('user')->logout();
             return redirect()->route('user.login')->with('error', 'Akun Anda tidak aktif.');
         }
 

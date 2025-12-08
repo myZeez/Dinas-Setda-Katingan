@@ -106,11 +106,11 @@
                     <div class="card-body">
                         <div class="mb-3">
                             <label for="role" class="form-label">Role <span class="text-danger">*</span></label>
-                            <select class="form-select" id="role" name="role" required {{ $user->id === auth()->id() ? 'disabled' : '' }}>
+                            <select class="form-select" id="role" name="role" required {{ $user->id === auth('admin')->id() ? 'disabled' : '' }}>
                                 <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin Biasa</option>
                                 <option value="super_admin" {{ old('role', $user->role) == 'super_admin' ? 'selected' : '' }}>Super Admin</option>
                             </select>
-                            @if($user->id === auth()->id())
+                            @if($user->id === auth('admin')->id())
                                 <input type="hidden" name="role" value="{{ $user->role }}">
                                 <div class="form-text text-warning">Tidak dapat mengubah role sendiri</div>
                             @else
@@ -122,10 +122,10 @@
                         </div>
                         <div class="mb-3">
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="is_active" name="is_active" {{ $user->is_active ? 'checked' : '' }} {{ $user->id === auth()->id() ? 'disabled' : '' }}>
+                                <input class="form-check-input" type="checkbox" id="is_active" name="is_active" {{ $user->is_active ? 'checked' : '' }} {{ $user->id === auth('admin')->id() ? 'disabled' : '' }}>
                                 <label class="form-check-label" for="is_active">Aktif</label>
                             </div>
-                            @if($user->id === auth()->id())
+                            @if($user->id === auth('admin')->id())
                                 <div class="form-text text-warning">Tidak dapat mengubah status sendiri</div>
                             @endif
                         </div>

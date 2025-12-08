@@ -72,7 +72,7 @@ class BeritaController extends Controller
         ]);
 
         $validated['slug'] = Berita::generateSlug($validated['judul']);
-        $validated['user_id'] = Auth::id();
+        $validated['user_id'] = Auth::guard('admin')->id();
 
         // Handle foto upload
         if ($request->hasFile('foto')) {

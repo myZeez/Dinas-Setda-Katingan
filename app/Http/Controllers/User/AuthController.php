@@ -16,7 +16,7 @@ class AuthController extends Controller
      */
     public function showLogin()
     {
-        if (Auth::check() && Auth::user()->isUser()) {
+        if (Auth::guard('user')->check() && Auth::guard('user')->user()->isUser()) {
             return redirect()->route('user.dashboard');
         }
         return view('user.auth.login');
@@ -32,19 +32,19 @@ class AuthController extends Controller
             'password' => 'required|min:6',
         ]);
 
-        if (Auth::attempt($credentials, $request->remember)) {
-            $user = Auth::user();
+        if (Auth::guard('user')->attempt($credentials, $request->remember)) {
+            $user = Auth::guard('user')->user();
 
             // Check if user role
             if ($user->role !== 'user') {
-                Auth::logout();
+                Auth::guard('user')->logout();
                 return back()->withErrors([
                     'email' => 'Akun ini bukan akun pengguna layanan.',
                 ])->onlyInput('email');
             }
 
             if (!$user->is_active) {
-                Auth::logout();
+                Auth::guard('user')->logout();
                 return back()->withErrors([
                     'email' => 'Akun Anda tidak aktif. Silakan hubungi administrator.',
                 ])->onlyInput('email');
@@ -75,17 +75,17 @@ class AuthController extends Controller
             'password' => 'required|min:6',
         ]);
 
-        if (!Auth::attempt($credentials)) {
+        if (!Auth::guard('user')->attempt($credentials)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Email atau password salah.',
             ], 401);
         }
 
-        $user = Auth::user();
+        $user = Auth::guard('user')->user();
 
         if ($user->role !== 'user') {
-            Auth::logout();
+            Auth::guard('user')->logout();
             return response()->json([
                 'success' => false,
                 'message' => 'Akun ini bukan akun pengguna layanan.',
@@ -93,7 +93,7 @@ class AuthController extends Controller
         }
 
         if (!$user->is_active) {
-            Auth::logout();
+            Auth::guard('user')->logout();
             return response()->json([
                 'success' => false,
                 'message' => 'Akun Anda tidak aktif. Silakan hubungi administrator.',
@@ -119,7 +119,7 @@ class AuthController extends Controller
      */
     public function showRegister()
     {
-        if (Auth::check() && Auth::user()->isUser()) {
+        if (Auth::guard('user')->check() && Auth::guard('user')->user()->isUser()) {
             return redirect()->route('user.dashboard');
         }
         return view('user.auth.register');
@@ -171,7 +171,7 @@ class AuthController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        Auth::login($user);
+        Auth::guard('user')->login($user);
 
         // Create Passport token for new user
         $token = $user->createToken('UserAccessToken')->accessToken;
@@ -185,14 +185,14 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
-        $user = Auth::user();
+        $user = Auth::guard('user')->user();
 
         // Revoke all tokens
         if ($user) {
             $user->tokens()->delete();
         }
 
-        Auth::logout();
+        Auth::guard('user')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

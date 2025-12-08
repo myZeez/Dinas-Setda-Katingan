@@ -14,7 +14,7 @@ class ProfileController extends Controller
      */
     public function index()
     {
-        $user = Auth::user();
+        $user = Auth::guard('user')->user();
         return view('user.profile.index', compact('user'));
     }
 
@@ -23,7 +23,7 @@ class ProfileController extends Controller
      */
     public function update(Request $request)
     {
-        $user = Auth::user();
+        $user = Auth::guard('user')->user();
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -54,9 +54,9 @@ class ProfileController extends Controller
             'password.confirmed' => 'Konfirmasi password tidak cocok',
         ]);
 
-        $user = Auth::user();
+        $user = Auth::guard('user')->user();
 
-        if (!Hash::check($validated['current_password'], $user->password)) {
+        if (!Hash::check($request->current_password, $user->password)) {
             return back()->withErrors(['current_password' => 'Password saat ini tidak sesuai.']);
         }
 

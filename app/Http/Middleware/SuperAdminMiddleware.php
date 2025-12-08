@@ -15,11 +15,11 @@ class SuperAdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check()) {
+        if (!auth('admin')->check()) {
             return redirect()->route('admin.login');
         }
 
-        if (auth()->user()->role !== 'super_admin') {
+        if (auth('admin')->user()->role !== 'super_admin') {
             abort(403, 'Akses ditolak. Hanya Super Admin yang dapat mengakses halaman ini.');
         }
 

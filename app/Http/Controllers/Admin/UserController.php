@@ -192,7 +192,7 @@ class UserController extends Controller
         $user = User::whereIn('role', ['super_admin', 'admin'])->findOrFail($id);
 
         // Prevent deleting self
-        if ($user->id === auth()->id()) {
+        if ($user->id === auth('admin')->id()) {
             return back()->with('error', 'Tidak dapat menghapus akun sendiri.');
         }
 
@@ -234,7 +234,7 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         // Prevent toggling self
-        if ($user->id === auth()->id()) {
+        if ($user->id === auth('admin')->id()) {
             return back()->with('error', 'Tidak dapat mengubah status akun sendiri.');
         }
 

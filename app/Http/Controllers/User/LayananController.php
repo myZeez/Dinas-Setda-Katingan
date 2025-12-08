@@ -58,7 +58,7 @@ class LayananController extends Controller
             'surat_penawaran.max' => 'Ukuran file maksimal 5MB',
         ]);
 
-        $user = Auth::user();
+        $user = Auth::guard('user')->user();
 
         // Create Pengajuan dengan status menunggu review surat penawaran
         $pengajuan = PengajuanLayanan::create([
@@ -104,7 +104,7 @@ class LayananController extends Controller
      */
     public function reuploadSuratPenawaran(Request $request, $id)
     {
-        $user = Auth::user();
+        $user = Auth::guard('user')->user();
         $pengajuan = PengajuanLayanan::where('user_id', $user->id)->findOrFail($id);
 
         // Check status harus sp_revisi
@@ -180,7 +180,7 @@ class LayananController extends Controller
      */
     public function uploadKAK(Request $request, $id)
     {
-        $user = Auth::user();
+        $user = Auth::guard('user')->user();
         $pengajuan = PengajuanLayanan::where('user_id', $user->id)->findOrFail($id);
 
         // Check status harus sp_disetujui atau kak_revisi
@@ -266,7 +266,7 @@ class LayananController extends Controller
      */
     public function uploadNotaKesepakatan(Request $request, $id)
     {
-        $user = Auth::user();
+        $user = Auth::guard('user')->user();
         $pengajuan = PengajuanLayanan::where('user_id', $user->id)->findOrFail($id);
 
         // Check status harus kak_disetujui
@@ -303,7 +303,7 @@ class LayananController extends Controller
      */
     public function riwayat(Request $request)
     {
-        $user = Auth::user();
+        $user = Auth::guard('user')->user();
 
         $query = PengajuanLayanan::with(['jenisLayanan'])
             ->where('user_id', $user->id)
@@ -333,7 +333,7 @@ class LayananController extends Controller
      */
     public function detail($id)
     {
-        $user = Auth::user();
+        $user = Auth::guard('user')->user();
         $pengajuan = PengajuanLayanan::with(['jenisLayanan', 'dokumens', 'logs.user'])
             ->where('user_id', $user->id)
             ->findOrFail($id);

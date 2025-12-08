@@ -655,7 +655,7 @@
                 </li>
             </ul>
 
-            @if(auth()->user()->role === 'super_admin')
+            @if(auth('admin')->user()->role === 'super_admin')
             <div class="menu-label">Manajemen</div>
             <ul class="nav flex-column">
                 <li class="nav-item">
@@ -733,10 +733,10 @@
                 <div class="dropdown">
                     <div class="user-dropdown" data-bs-toggle="dropdown">
                         <div class="user-avatar">
-                            {{ substr(Auth::user()->name ?? 'A', 0, 1) }}
+                            {{ substr(Auth::guard('admin')->user()->name ?? 'A', 0, 1) }}
                         </div>
                         <div class="user-info">
-                            <h6>{{ Auth::user()->name ?? 'Administrator' }}</h6>
+                            <h6>{{ Auth::guard('admin')->user()->name ?? 'Administrator' }}</h6>
                             <span>Admin</span>
                         </div>
                         <i class="bi bi-chevron-down ms-2"></i>

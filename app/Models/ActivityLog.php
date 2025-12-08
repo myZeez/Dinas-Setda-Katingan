@@ -97,7 +97,8 @@ class ActivityLog extends Model
      */
     public static function log($action, $module, $description, $oldData = null, $newData = null)
     {
-        $user = auth()->user();
+        // Try admin guard first, then user guard
+        $user = auth('admin')->user() ?? auth('user')->user();
 
         return self::create([
             'user_id' => $user?->id,

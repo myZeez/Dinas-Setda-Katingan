@@ -16,7 +16,7 @@ class SettingController extends Controller
      */
     public function profile()
     {
-        $user = Auth::user();
+        $user = Auth::guard('admin')->user();
         return view('admin.settings.profile', compact('user'));
     }
 
@@ -25,7 +25,7 @@ class SettingController extends Controller
      */
     public function updateProfile(Request $request)
     {
-        $user = Auth::user();
+        $user = Auth::guard('admin')->user();
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -60,7 +60,7 @@ class SettingController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        $user = Auth::user();
+        $user = Auth::guard('admin')->user();
 
         if (!Hash::check($request->current_password, $user->password)) {
             return back()->withErrors(['current_password' => 'Password saat ini tidak sesuai.']);

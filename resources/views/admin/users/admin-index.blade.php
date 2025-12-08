@@ -185,7 +185,7 @@
                                         <a href="{{ route('admin.users.admin.edit', $user->id) }}" class="btn btn-outline-primary" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        @if($user->id !== auth()->id())
+                                        @if($user->id !== auth('admin')->id())
                                             <button type="button" class="btn btn-outline-{{ $user->is_active ? 'warning' : 'success' }}" title="{{ $user->is_active ? 'Nonaktifkan' : 'Aktifkan' }}"
                                                 onclick="confirmAction('toggle-admin-{{ $user->id }}', '{{ $user->is_active ? 'Nonaktifkan' : 'Aktifkan' }} Admin?', 'Admin {{ addslashes($user->name) }} akan di{{ $user->is_active ? 'nonaktifkan' : 'aktifkan' }}', 'question', 'Ya, Lanjutkan', '{{ $user->is_active ? '#f59e0b' : '#22c55e' }}')">
                                                 <i class="bi bi-{{ $user->is_active ? 'pause' : 'play' }}"></i>

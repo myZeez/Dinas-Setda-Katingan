@@ -106,7 +106,7 @@ class LayananController extends Controller
         // Create log
         LogPengajuan::create([
             'pengajuan_layanan_id' => $pengajuan->id,
-            'user_id' => Auth::id(),
+            'user_id' => Auth::guard('admin')->id(),
             'status' => $validated['status'],
             'keterangan' => $validated['catatan'] ?? 'Status diubah dari ' . $oldStatus . ' ke ' . $validated['status'],
         ]);
@@ -133,7 +133,7 @@ class LayananController extends Controller
         // Create log
         LogPengajuan::create([
             'pengajuan_layanan_id' => $pengajuan->id,
-            'user_id' => Auth::id(),
+            'user_id' => Auth::guard('admin')->id(),
             'status' => 'sp_disetujui',
             'keterangan' => 'Surat Penawaran disetujui oleh admin',
         ]);
@@ -164,7 +164,7 @@ class LayananController extends Controller
         // Create log
         LogPengajuan::create([
             'pengajuan_layanan_id' => $pengajuan->id,
-            'user_id' => Auth::id(),
+            'user_id' => Auth::guard('admin')->id(),
             'status' => 'sp_revisi',
             'keterangan' => 'Surat Penawaran perlu revisi: ' . $validated['catatan_revisi_sp'],
         ]);
@@ -191,7 +191,7 @@ class LayananController extends Controller
         // Create log
         LogPengajuan::create([
             'pengajuan_layanan_id' => $pengajuan->id,
-            'user_id' => Auth::id(),
+            'user_id' => Auth::guard('admin')->id(),
             'status' => 'kak_disetujui',
             'keterangan' => 'Kerangka Acuan Kerja (KAK) disetujui oleh admin',
         ]);
@@ -222,7 +222,7 @@ class LayananController extends Controller
         // Create log
         LogPengajuan::create([
             'pengajuan_layanan_id' => $pengajuan->id,
-            'user_id' => Auth::id(),
+            'user_id' => Auth::guard('admin')->id(),
             'status' => 'kak_revisi',
             'keterangan' => 'KAK perlu revisi: ' . $validated['catatan_revisi_kak'],
         ]);
@@ -251,7 +251,7 @@ class LayananController extends Controller
         // Create log
         LogPengajuan::create([
             'pengajuan_layanan_id' => $pengajuan->id,
-            'user_id' => Auth::id(),
+            'user_id' => Auth::guard('admin')->id(),
             'status' => $pengajuan->status,
             'keterangan' => 'Status dokumen ' . $dokumen->jenis_dokumen_label . ' diubah menjadi ' . $validated['status'],
         ]);
@@ -296,7 +296,7 @@ class LayananController extends Controller
         // Create log
         LogPengajuan::create([
             'pengajuan_layanan_id' => $pengajuan->id,
-            'user_id' => Auth::id(),
+            'user_id' => Auth::guard('admin')->id(),
             'status' => 'selesai',
             'keterangan' => 'Pengajuan selesai. Dokumen hasil/surat bukti telah diupload dan dikirim ke pemohon.' .
                 ($request->catatan_selesai ? ' Catatan: ' . $request->catatan_selesai : ''),
