@@ -10,7 +10,7 @@
 
 <!-- Stats Cards -->
 <div class="row g-4 mb-4">
-    <div class="col-sm-6 col-xl-4">
+    <div class="col-sm-6 col-lg-3">
         <div class="card stat-card">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
@@ -23,7 +23,7 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-6 col-xl-4">
+    <div class="col-sm-6 col-lg-3">
         <div class="card stat-card">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
@@ -36,7 +36,7 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-6 col-xl-4">
+    <div class="col-sm-6 col-lg-3">
         <div class="card stat-card">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
@@ -45,6 +45,19 @@
                 </div>
                 <div class="stat-icon blue">
                     <i class="bi bi-check-circle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="card stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <p class="stat-value">{{ $stats['layanan_bulan_ini'] ?? 0 }}</p>
+                    <p class="stat-label">Bulan Ini</p>
+                </div>
+                <div class="stat-icon purple">
+                    <i class="bi bi-calendar-event"></i>
                 </div>
             </div>
         </div>
@@ -130,6 +143,43 @@
                 </div>
             </div>
             <div class="card-body p-4">
+                @if(isset($recentPengajuan) && $recentPengajuan->count() > 0)
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>No. Pengajuan</th>
+                                <th>Jenis Layanan</th>
+                                <th>Tanggal</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($recentPengajuan as $pengajuan)
+                            <tr>
+                                <td><span class="badge bg-secondary">{{ $pengajuan->nomor_pengajuan }}</span></td>
+                                <td>{{ $pengajuan->jenisLayanan->nama ?? '-' }}</td>
+                                <td>
+                                    <small>{{ $pengajuan->created_at->format('d M Y') }}</small><br>
+                                    <small class="text-muted">{{ $pengajuan->created_at->format('H:i') }}</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{{ $pengajuan->status_color ?? 'secondary' }}">
+                                        {{ $pengajuan->status_label ?? $pengajuan->status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{{ route('user.layanan.detail', $pengajuan->id) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i> Detail
+                                    </a>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                @else
                 <div class="text-center py-5">
                     <i class="bi bi-inbox text-muted" style="font-size: 48px;"></i>
                     <p class="text-muted mt-3">Belum ada pengajuan layanan</p>
@@ -137,6 +187,7 @@
                         <i class="bi bi-plus-lg me-1"></i> Ajukan Layanan
                     </a>
                 </div>
+                @endif
             </div>
         </div>
     </div>

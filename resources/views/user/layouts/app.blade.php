@@ -491,6 +491,12 @@
                         <span>Profil Saya</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('user.activity-log.index') }}" class="nav-link {{ request()->routeIs('user.activity-log.*') ? 'active' : '' }}">
+                        <i class="bi bi-activity"></i>
+                        <span>Riwayat Aktivitas</span>
+                    </a>
+                </li>
             </ul>
         </nav>
     </aside>

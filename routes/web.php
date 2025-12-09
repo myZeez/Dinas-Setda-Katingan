@@ -17,6 +17,7 @@ use App\Http\Controllers\User\AuthController as UserAuthController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\User\LayananController;
 use App\Http\Controllers\User\ProfileController;
+use App\Http\Controllers\User\ActivityLogController as UserActivityLogController;
 use App\Http\Controllers\LandingPageController;
 
 // Landing Page Routes
@@ -209,5 +210,9 @@ Route::prefix('layanan')->name('user.')->group(function () {
         Route::get('/profil', [ProfileController::class, 'index'])->name('profile');
         Route::put('/profil', [ProfileController::class, 'update'])->name('profile.update');
         Route::put('/profil/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+
+        // Activity Log
+        Route::get('/aktivitas', [UserActivityLogController::class, 'index'])->name('activity-log.index');
+        Route::get('/aktivitas/{id}', [UserActivityLogController::class, 'show'])->name('activity-log.show');
     });
 });

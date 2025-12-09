@@ -53,11 +53,67 @@
         <div class="card stat-card">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <p class="stat-value">{{ $stats['total_kontrak'] ?? 0 }}</p>
-                    <p class="stat-label">Total Kontrak</p>
+                    <p class="stat-value">{{ $stats['total_pengajuan'] ?? 0 }}</p>
+                    <p class="stat-label">Total Pengajuan</p>
                 </div>
                 <div class="stat-icon red">
                     <i class="bi bi-file-earmark-text"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Additional Stats Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="card stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <p class="stat-value">{{ $stats['total_user'] ?? 0 }}</p>
+                    <p class="stat-label">Total User</p>
+                </div>
+                <div class="stat-icon purple">
+                    <i class="bi bi-people"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <p class="stat-value">{{ $stats['pengajuan_proses'] ?? 0 }}</p>
+                    <p class="stat-label">Pengajuan Diproses</p>
+                </div>
+                <div class="stat-icon warning">
+                    <i class="bi bi-hourglass-split"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <p class="stat-value">{{ $stats['pengajuan_selesai'] ?? 0 }}</p>
+                    <p class="stat-label">Pengajuan Selesai</p>
+                </div>
+                <div class="stat-icon success">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <p class="stat-value">{{ $stats['pengajuan_bulan_ini'] ?? 0 }}</p>
+                    <p class="stat-label">Pengajuan Bulan Ini</p>
+                </div>
+                <div class="stat-icon info">
+                    <i class="bi bi-calendar-event"></i>
                 </div>
             </div>
         </div>
@@ -224,157 +280,70 @@
     </div>
 </div>
 
-<!-- Capaian & Kendala Tahunan Kerja Sama -->
-<div class="row mt-4 g-4">
-    <!-- Capaian Tahunan Kerja Sama -->
-    <div class="col-lg-7">
+<!-- Pengajuan Layanan Terbaru -->
+<div class="row mt-4">
+    <div class="col-12">
         <div class="card">
             <div class="card-header bg-transparent border-0 pt-4 pb-0 px-4">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h5 class="card-title mb-1">Capaian Tahunan Kerja Sama</h5>
-                        <p class="text-muted small mb-0">Statistik kerja sama per tahun</p>
+                        <h5 class="card-title mb-1"><i class="bi bi-file-earmark-text text-primary me-2"></i>Pengajuan Layanan Terbaru</h5>
+                        <p class="text-muted small mb-0">5 pengajuan layanan terakhir</p>
                     </div>
-                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editCapaianModal">
-                        <i class="bi bi-pencil me-1"></i> Edit Data
-                    </button>
-                </div>
-            </div>
-            <div class="card-body p-4">
-                <div style="position: relative; height: 280px; width: 100%;">
-                    <canvas id="capaianChart"></canvas>
-                </div>
-                <div class="mt-3 d-flex justify-content-center gap-4 flex-wrap">
-                    <div class="d-flex align-items-center gap-2">
-                        <div style="width: 12px; height: 12px; background: #3b82f6; border-radius: 2px;"></div>
-                        <small class="text-muted">Kerja Sama Daerah</small>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <div style="width: 12px; height: 12px; background: #f59e0b; border-radius: 2px;"></div>
-                        <small class="text-muted">Kerja Sama Pihak Ketiga</small>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <div style="width: 12px; height: 12px; background: #22c55e; border-radius: 2px;"></div>
-                        <small class="text-muted">Nota Kesepakatan Sinergi</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Kendala Tahunan Kerja Sama -->
-    <div class="col-lg-5">
-        <div class="card h-100">
-            <div class="card-header bg-transparent border-0 pt-4 pb-0 px-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h5 class="card-title mb-1">Kendala Tahunan Kerja Sama</h5>
-                        <p class="text-muted small mb-0">Catatan kendala per tahun</p>
-                    </div>
-                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editKendalaModal">
-                        <i class="bi bi-pencil me-1"></i> Edit
-                    </button>
+                    <a href="{{ route('admin.layanan.pengajuan') }}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-eye me-1"></i> Lihat Semua
+                    </a>
                 </div>
             </div>
             <div class="card-body p-4">
                 <div class="table-responsive">
-                    <table class="table table-bordered table-sm" id="kendalaTable">
+                    <table class="table table-hover">
                         <thead class="table-light">
-                            <tr class="text-center">
-                                <th>2022</th>
-                                <th>2023</th>
-                                <th>2024</th>
-                                <th>2025</th>
+                            <tr>
+                                <th>No. Pengajuan</th>
+                                <th>Pemohon</th>
+                                <th>Jenis Layanan</th>
+                                <th>Tanggal</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
+                            @forelse($recentPengajuan as $pengajuan)
                             <tr>
-                                <td class="small p-2" id="kendala2022">{{ $kendala['2022'] ?? '-' }}</td>
-                                <td class="small p-2" id="kendala2023">{{ $kendala['2023'] ?? '-' }}</td>
-                                <td class="small p-2" id="kendala2024">{{ $kendala['2024'] ?? '-' }}</td>
-                                <td class="small p-2" id="kendala2025">{{ $kendala['2025'] ?? '-' }}</td>
+                                <td><span class="badge bg-secondary">{{ $pengajuan->nomor_pengajuan }}</span></td>
+                                <td>
+                                    <div class="fw-medium">{{ $pengajuan->user->name ?? '-' }}</div>
+                                    <small class="text-muted">{{ $pengajuan->user->instansi ?? '-' }}</small>
+                                </td>
+                                <td>{{ $pengajuan->jenisLayanan->nama ?? '-' }}</td>
+                                <td>
+                                    <small>{{ $pengajuan->created_at->format('d M Y') }}</small><br>
+                                    <small class="text-muted">{{ $pengajuan->created_at->format('H:i') }}</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{{ $pengajuan->status_color ?? 'secondary' }}">
+                                        {{ $pengajuan->status_label ?? $pengajuan->status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{{ route('admin.layanan.detail', $pengajuan->id) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
                             </tr>
+                            @empty
+                            <tr>
+                                <td colspan="6" class="text-center py-4">
+                                    <i class="bi bi-inbox text-muted" style="font-size: 2rem;"></i>
+                                    <p class="text-muted mt-2">Belum ada pengajuan layanan</p>
+                                </td>
+                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
-                <div class="mt-3 p-3 bg-light rounded">
-                    <p class="small text-muted mb-0"><em>Klik tombol Edit untuk mengubah data kendala tahunan.</em></p>
-                </div>
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Edit Capaian -->
-<div class="modal fade" id="editCapaianModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Edit Data Capaian Tahunan</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form id="formCapaian">
-                <div class="modal-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Tahun</th>
-                                    <th>Kerja Sama Daerah</th>
-                                    <th>Kerja Sama Pihak Ketiga</th>
-                                    <th>Nota Kesepakatan</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for($year = 2020; $year <= 2025; $year++)
-                                <tr>
-                                    <td class="fw-bold">{{ $year }}</td>
-                                    <td><input type="number" class="form-control form-control-sm" name="ksd_{{ $year }}" value="{{ $capaian['ksd'][$year] ?? 0 }}"></td>
-                                    <td><input type="number" class="form-control form-control-sm" name="kspk_{{ $year }}" value="{{ $capaian['kspk'][$year] ?? 0 }}"></td>
-                                    <td><input type="number" class="form-control form-control-sm" name="nks_{{ $year }}" value="{{ $capaian['nks'][$year] ?? 0 }}"></td>
-                                </tr>
-                                @endfor
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-check-lg me-1"></i> Simpan
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Edit Kendala -->
-<div class="modal fade" id="editKendalaModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Edit Kendala Tahunan Kerja Sama</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form id="formKendala">
-                <div class="modal-body">
-                    <div class="row g-3">
-                        @for($year = 2022; $year <= 2025; $year++)
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">Kendala {{ $year }}</label>
-                            <textarea class="form-control" name="kendala_{{ $year }}" rows="4" placeholder="Masukkan kendala tahun {{ $year }}...">{{ $kendala[$year] ?? '' }}</textarea>
-                        </div>
-                        @endfor
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-check-lg me-1"></i> Simpan
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
 </div>
@@ -463,89 +432,5 @@
             }
         });
     }
-
-    // =============================================
-    // CAPAIAN CHART
-    // =============================================
-    // Data Capaian (dari database atau default)
-    const capaianData = {
-        ksd: {!! json_encode($capaian['ksd'] ?? [2020 => 72, 2021 => 81, 2022 => 72, 2023 => 77, 2024 => 76, 2025 => 69]) !!},
-        kspk: {!! json_encode($capaian['kspk'] ?? [2020 => 74, 2021 => 81, 2022 => 78, 2023 => 77, 2024 => 77, 2025 => 78]) !!},
-        nks: {!! json_encode($capaian['nks'] ?? [2020 => 0, 2021 => 0, 2022 => 0, 2023 => 79, 2024 => 79, 2025 => 82]) !!}
-    };
-
-    // Create Chart
-    const ctx = document.getElementById('capaianChart').getContext('2d');
-
-    // Destroy existing chart if exists
-    if (window.capaianChartInstance) {
-        window.capaianChartInstance.destroy();
-    }
-
-    window.capaianChartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['2020', '2021', '2022', '2023', '2024', '2025'],
-            datasets: [
-                {
-                    label: 'Kerja Sama Daerah',
-                    data: Object.values(capaianData.ksd),
-                    backgroundColor: '#3b82f6',
-                    borderRadius: 4,
-                },
-                {
-                    label: 'Kerja Sama Pihak Ketiga',
-                    data: Object.values(capaianData.kspk),
-                    backgroundColor: '#f59e0b',
-                    borderRadius: 4,
-                },
-                {
-                    label: 'Nota Kesepakatan Sinergi',
-                    data: Object.values(capaianData.nks),
-                    backgroundColor: '#22c55e',
-                    borderRadius: 4,
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: {
-                duration: 1000,
-                easing: 'easeOutQuart'
-            },
-            plugins: {
-                legend: {
-                    display: false
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 100,
-                    ticks: {
-                        stepSize: 10
-                    }
-                }
-            }
-        }
-    });
-
-    // Handle form submissions
-    document.getElementById('formCapaian').addEventListener('submit', function(e) {
-        e.preventDefault();
-        // Here you would send AJAX request to save data
-        alert('Data capaian berhasil disimpan! (Demo)');
-        bootstrap.Modal.getInstance(document.getElementById('editCapaianModal')).hide();
-        location.reload();
-    });
-
-    document.getElementById('formKendala').addEventListener('submit', function(e) {
-        e.preventDefault();
-        // Here you would send AJAX request to save data
-        alert('Data kendala berhasil disimpan! (Demo)');
-        bootstrap.Modal.getInstance(document.getElementById('editKendalaModal')).hide();
-        location.reload();
-    });
 </script>
 @endpush

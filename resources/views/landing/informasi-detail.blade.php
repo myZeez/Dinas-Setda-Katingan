@@ -62,31 +62,80 @@
                         @endif
                     </div>
 
-                    @if($informasi->deskripsi)
+                    @if($informasi->keterangan)
                         <div class="detail-content">
-                            <h5 class="content-title">Deskripsi</h5>
+                            <h5 class="content-title">Keterangan</h5>
                             <div class="content-body">
-                                {!! nl2br(e($informasi->deskripsi)) !!}
+                                {!! nl2br(e($informasi->keterangan)) !!}
                             </div>
                         </div>
                     @endif
 
-                    @if($informasi->file_path)
+                    <!-- File Dokumen -->
+                    @if($informasi->file_dokumen || $informasi->file_lampiran)
                         <div class="detail-file">
-                            <h5 class="content-title">File Dokumen</h5>
-                            <div class="file-preview">
-                                <div class="file-info">
-                                    <div class="file-icon">
-                                        <i class="bi bi-file-earmark-pdf"></i>
+                            <h5 class="content-title"><i class="bi bi-paperclip me-2"></i>File Dokumen</h5>
+
+                            <div class="files-container">
+                                @if($informasi->file_dokumen)
+                                <div class="file-card">
+                                    <div class="file-preview-box">
+                                        <div class="file-icon-large">
+                                            <i class="bi bi-file-earmark-pdf text-danger"></i>
+                                        </div>
+                                        <div class="file-details">
+                                            <p class="file-label">Dokumen PDF</p>
+                                            <p class="file-name">{{ basename($informasi->file_dokumen) }}</p>
+                                            @php
+                                                $filePath = storage_path('app/public/' . $informasi->file_dokumen);
+                                                $fileSize = file_exists($filePath) ? number_format(filesize($filePath) / 1024, 2) : '0';
+                                            @endphp
+                                            <span class="file-size">{{ $fileSize }} KB</span>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p class="file-name">{{ basename($informasi->file_path) }}</p>
-                                        <span class="file-size">PDF Document</span>
-                                    </div>
+                                    <a href="{{ asset('storage/' . $informasi->file_dokumen) }}"
+                                       class="btn-download-file"
+                                       target="_blank"
+                                       download>
+                                        <i class="bi bi-download"></i> Download
+                                    </a>
                                 </div>
-                                <a href="{{ route('landing.informasi.download', [$kategoriInfo->slug, $informasi->id]) }}" class="btn-download">
-                                    <i class="bi bi-download"></i> Unduh File
-                                </a>
+                                @endif
+
+                                @if($informasi->file_lampiran)
+                                <div class="file-card">
+                                    <div class="file-preview-box">
+                                        <div class="file-icon-large">
+                                            @php
+                                                $extension = pathinfo($informasi->file_lampiran, PATHINFO_EXTENSION);
+                                                $iconClass = match(strtolower($extension)) {
+                                                    'pdf' => 'bi-file-earmark-pdf text-danger',
+                                                    'jpg', 'jpeg', 'png', 'gif' => 'bi-file-earmark-image text-success',
+                                                    'doc', 'docx' => 'bi-file-earmark-word text-primary',
+                                                    'xls', 'xlsx' => 'bi-file-earmark-excel text-success',
+                                                    default => 'bi-file-earmark text-secondary'
+                                                };
+                                            @endphp
+                                            <i class="bi {{ $iconClass }}"></i>
+                                        </div>
+                                        <div class="file-details">
+                                            <p class="file-label">{{ $informasi->lampiran_label ?? 'Lampiran' }}</p>
+                                            <p class="file-name">{{ basename($informasi->file_lampiran) }}</p>
+                                            @php
+                                                $filePath = storage_path('app/public/' . $informasi->file_lampiran);
+                                                $fileSize = file_exists($filePath) ? number_format(filesize($filePath) / 1024, 2) : '0';
+                                            @endphp
+                                            <span class="file-size">{{ $fileSize }} KB</span>
+                                        </div>
+                                    </div>
+                                    <a href="{{ asset('storage/' . $informasi->file_lampiran) }}"
+                                       class="btn-download-file"
+                                       target="_blank"
+                                       download>
+                                        <i class="bi bi-download"></i> Download
+                                    </a>
+                                </div>
+                                @endif
                             </div>
                         </div>
                     @endif
@@ -244,6 +293,112 @@
     .content-body {
         color: #334155;
         line-height: 1.8;
+    }
+
+    /* File Cards */
+    .files-container {
+        display: grid;
+        gap: 20px;
+    }
+
+    .file-card {
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .file-card:hover {
+        border-color: #dc2626;
+        background: #fef2f2;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(220, 38, 38, 0.15);
+    }
+
+    .file-preview-box {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex: 1;
+    }
+
+    .file-icon-large {
+        width: 64px;
+        height: 64px;
+        background: white;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .file-icon-large i {
+        font-size: 32px;
+    }
+
+    .file-details {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .file-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        color: #64748b;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+    }
+
+    .file-name {
+        font-weight: 600;
+        color: #0a1628;
+        margin-bottom: 6px;
+        font-size: 14px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .file-size {
+        font-size: 12px;
+        color: #64748b;
+        background: white;
+        padding: 2px 8px;
+        border-radius: 4px;
+        display: inline-block;
+    }
+
+    .btn-download-file {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, #dc2626, #b91c1c);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .btn-download-file:hover {
+        color: white;
+        box-shadow: 0 8px 25px rgba(220, 38, 38, 0.4);
+        transform: translateY(-2px);
+    }
+
+    .btn-download-file i {
+        font-size: 16px;
     }
 
     .file-preview {
@@ -504,6 +659,56 @@
 
         .content-title {
             font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .content-body {
+            font-size: 14px;
+        }
+
+        /* File Cards Responsive */
+        .file-card {
+            flex-direction: column;
+            align-items: stretch;
+            padding: 18px;
+        }
+
+        .file-preview-box {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .file-icon-large {
+            width: 56px;
+            height: 56px;
+        }
+
+        .file-icon-large i {
+            font-size: 28px;
+        }
+
+        .file-details {
+            width: 100%;
+        }
+
+        .file-label {
+            font-size: 10px;
+        }
+
+        .file-name {
+            font-size: 13px;
+            white-space: normal;
+        }
+
+        .btn-download-file {
+            width: 100%;
+            justify-content: center;
+            padding: 10px 20px;
+            font-size: 13px;
+        }
+
+        .detail-footer {
             margin-bottom: 12px;
         }
 

@@ -129,7 +129,10 @@ class StrukturOrganisasiController extends Controller
      */
     public function pegawai(Request $request)
     {
-        $query = Pegawai::with('unitKerja')->orderBy('unit_kerja_id')->orderBy('urutan');
+        $query = Pegawai::with('unitKerja')
+            ->orderBy('unit_kerja_id')
+            ->orderBy('is_pimpinan', 'desc')
+            ->orderBy('urutan');
 
         if ($request->unit_kerja_id) {
             $query->where('unit_kerja_id', $request->unit_kerja_id);
@@ -161,12 +164,19 @@ class StrukturOrganisasiController extends Controller
             'golongan' => 'nullable|string|max:50',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'unit_kerja_id' => 'required|exists:unit_kerjas,id',
-            'is_pimpinan' => 'boolean',
+            'is_pimpinan' => 'nullable|boolean',
             'urutan' => 'nullable|integer',
         ]);
 
-        $validated['is_pimpinan'] = $request->has('is_pimpinan');
-        $validated['urutan'] = $validated['urutan'] ?? 0;
+        // Handle checkbox is_pimpinan
+        $validated['is_pimpinan'] = $request->has('is_pimpinan') && $request->is_pimpinan ? true : false;
+
+        // Jika pimpinan, set urutan 0 agar selalu di atas
+        if ($validated['is_pimpinan']) {
+            $validated['urutan'] = 0;
+        } else {
+            $validated['urutan'] = $validated['urutan'] ?? 99;
+        }
 
         if ($request->hasFile('foto')) {
             $file = $request->file('foto');
@@ -194,13 +204,21 @@ class StrukturOrganisasiController extends Controller
             'golongan' => 'nullable|string|max:50',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'unit_kerja_id' => 'required|exists:unit_kerjas,id',
-            'is_pimpinan' => 'boolean',
+            'is_pimpinan' => 'nullable|boolean',
             'urutan' => 'nullable|integer',
-            'is_active' => 'boolean',
+            'is_active' => 'nullable|boolean',
         ]);
 
-        $validated['is_pimpinan'] = $request->has('is_pimpinan');
-        $validated['is_active'] = $request->has('is_active');
+        // Handle checkbox is_pimpinan
+        $validated['is_pimpinan'] = $request->has('is_pimpinan') && $request->is_pimpinan ? true : false;
+        $validated['is_active'] = $request->has('is_active') && $request->is_active ? true : false;
+
+        // Jika pimpinan, set urutan 0 agar selalu di atas
+        if ($validated['is_pimpinan']) {
+            $validated['urutan'] = 0;
+        } elseif (!isset($validated['urutan'])) {
+            $validated['urutan'] = $pegawai->urutan ?? 99;
+        }
 
         if ($request->hasFile('foto')) {
             // Delete old foto

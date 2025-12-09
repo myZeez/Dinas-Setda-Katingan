@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -33,6 +34,16 @@ class AuthController extends Controller
             $request->session()->put('api_token', $token);
             $request->session()->regenerate();
 
+            // Log activity
+            ActivityLog::log(
+                'login',
+                'auth',
+                "Admin {$user->name} berhasil login ke sistem",
+                null,
+                null,
+                'admin'
+            );
+
             return redirect()->intended(route('admin.dashboard'));
         }
 
@@ -41,9 +52,6 @@ class AuthController extends Controller
         ])->onlyInput('email');
     }
 
-    /**
-     * API Login - Returns token for API access
-     */
     public function apiLogin(Request $request)
     {
         $credentials = $request->validate([
@@ -71,6 +79,16 @@ class AuthController extends Controller
         // Create Passport token
         $token = $user->createToken('AdminAccessToken')->accessToken;
 
+        // Log activity
+        ActivityLog::log(
+            'login',
+            'auth',
+            "Admin {$user->name} berhasil login melalui API",
+            null,
+            null,
+            'admin'
+        );
+
         return response()->json([
             'success' => true,
             'message' => 'Login berhasil.',
@@ -86,6 +104,18 @@ class AuthController extends Controller
     {
         $user = Auth::guard('admin')->user();
 
+        // Log activity before logout
+        if ($user) {
+            ActivityLog::log(
+                'logout',
+                'auth',
+                "Admin {$user->name} logout dari sistem",
+                null,
+                null,
+                'admin'
+            );
+        }
+
         // Revoke all tokens
         if ($user) {
             $user->tokens()->delete();
@@ -98,9 +128,6 @@ class AuthController extends Controller
         return redirect()->route('admin.login');
     }
 
-    /**
-     * API Logout - Revoke token
-     */
     public function apiLogout(Request $request)
     {
         $user = $request->user();
@@ -116,9 +143,6 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * Get current authenticated admin profile (API)
-     */
     public function profile(Request $request)
     {
         return response()->json([

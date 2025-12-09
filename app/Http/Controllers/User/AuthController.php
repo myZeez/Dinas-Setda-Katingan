@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -57,6 +58,16 @@ class AuthController extends Controller
             $request->session()->put('api_token', $token);
             $request->session()->regenerate();
 
+            // Log activity
+            ActivityLog::log(
+                'login',
+                'auth',
+                "User {$user->name} berhasil login ke sistem",
+                null,
+                null,
+                'user'
+            );
+
             return redirect()->intended(route('user.dashboard'));
         }
 
@@ -102,6 +113,16 @@ class AuthController extends Controller
 
         // Create Passport token
         $token = $user->createToken('UserAccessToken')->accessToken;
+
+        // Log activity
+        ActivityLog::log(
+            'login',
+            'auth',
+            "User {$user->name} berhasil login melalui API",
+            null,
+            null,
+            'user'
+        );
 
         return response()->json([
             'success' => true,
@@ -177,6 +198,16 @@ class AuthController extends Controller
         $token = $user->createToken('UserAccessToken')->accessToken;
         $request->session()->put('api_token', $token);
 
+        // Log activity
+        ActivityLog::log(
+            'create',
+            'auth',
+            "User baru {$user->name} berhasil mendaftar",
+            null,
+            null,
+            'user'
+        );
+
         return redirect()->route('user.dashboard')->with('success', 'Selamat! Akun Anda berhasil dibuat.');
     }
 
@@ -186,6 +217,18 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         $user = Auth::guard('user')->user();
+
+        // Log activity before logout
+        if ($user) {
+            ActivityLog::log(
+                'logout',
+                'auth',
+                "User {$user->name} logout dari sistem",
+                null,
+                null,
+                'user'
+            );
+        }
 
         // Revoke all tokens
         if ($user) {

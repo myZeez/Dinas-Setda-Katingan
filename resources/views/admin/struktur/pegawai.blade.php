@@ -185,11 +185,11 @@
                                         </div>
                                         <div class="d-flex gap-3">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="is_pimpinan" id="isPimpinan{{ $pegawai->id }}" {{ $pegawai->is_pimpinan ? 'checked' : '' }}>
+                                                <input class="form-check-input" type="checkbox" name="is_pimpinan" id="isPimpinan{{ $pegawai->id }}" value="1" {{ $pegawai->is_pimpinan ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="isPimpinan{{ $pegawai->id }}">Kepala Unit</label>
                                             </div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="is_active" id="isActivePegawai{{ $pegawai->id }}" {{ $pegawai->is_active ? 'checked' : '' }}>
+                                                <input class="form-check-input" type="checkbox" name="is_active" id="isActivePegawai{{ $pegawai->id }}" value="1" {{ $pegawai->is_active ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="isActivePegawai{{ $pegawai->id }}">Aktif</label>
                                             </div>
                                         </div>
@@ -269,9 +269,10 @@
                     <div class="mb-3">
                         <label class="form-label">Urutan</label>
                         <input type="number" name="urutan" class="form-control" value="0">
+                        <small class="text-muted">Jika Kepala Unit dicentang, urutan otomatis menjadi 0 (paling atas)</small>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="is_pimpinan" id="isPimpinanNew">
+                        <input class="form-check-input" type="checkbox" name="is_pimpinan" id="isPimpinanNew" value="1">
                         <label class="form-check-label" for="isPimpinanNew">Kepala Unit (Pimpinan)</label>
                     </div>
                 </div>

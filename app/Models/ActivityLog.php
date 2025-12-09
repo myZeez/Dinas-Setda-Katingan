@@ -95,10 +95,15 @@ class ActivityLog extends Model
     /**
      * Static method to log activity
      */
-    public static function log($action, $module, $description, $oldData = null, $newData = null)
+    public static function log($action, $module, $description, $oldData = null, $newData = null, $guard = null)
     {
-        // Try admin guard first, then user guard
-        $user = auth('admin')->user() ?? auth('user')->user();
+        // Use specified guard or try to detect
+        if ($guard) {
+            $user = auth($guard)->user();
+        } else {
+            // Try admin guard first, then user guard
+            $user = auth('admin')->user() ?? auth('user')->user();
+        }
 
         return self::create([
             'user_id' => $user?->id,

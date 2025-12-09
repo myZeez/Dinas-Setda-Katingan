@@ -28,7 +28,7 @@
 <section class="section section-light">
     <div class="container">
         <!-- Category Tabs -->
-        <div class="category-tabs mb-5" data-aos="fade-up">
+        <div class="category-tabs mb-4" data-aos="fade-up">
             <a href="{{ route('landing.informasi', 'informasi-publik-bagian-pemerintahan') }}" class="category-tab {{ $kategoriInfo->slug == 'informasi-publik-bagian-pemerintahan' ? 'active' : '' }}">
                 <i class="bi bi-building"></i> Bag. Pemerintahan
             </a>
@@ -41,58 +41,141 @@
         </div>
 
         @if($informasis->count() > 0)
-            <div class="row g-4">
-                @foreach($informasis as $index => $informasi)
-                    <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ ($index % 3 + 1) * 100 }}">
-                        <div class="dokumen-card h-100">
-                            <div class="dokumen-icon">
-                                @if($informasi->jenisDokumen)
-                                    @php
-                                        $icon = match(strtolower($informasi->jenisDokumen->nama)) {
-                                            'sk', 'surat keputusan', 'keputusan' => 'bi-file-earmark-check',
-                                            'peraturan', 'regulasi', 'perda' => 'bi-journal-bookmark',
-                                            'laporan' => 'bi-file-earmark-text',
-                                            'mou', 'perjanjian', 'kesepakatan' => 'bi-file-earmark-medical',
-                                            'sop', 'prosedur' => 'bi-list-check',
-                                            default => 'bi-file-earmark-pdf'
-                                        };
-                                    @endphp
-                                    <i class="bi {{ $icon }}"></i>
-                                @else
-                                    <i class="bi bi-file-earmark-pdf"></i>
-                                @endif
-                            </div>
-                            <div class="dokumen-content">
-                                @if($informasi->jenisDokumen)
-                                    <span class="dokumen-type">{{ $informasi->jenisDokumen->nama }}</span>
-                                @endif
-                                <h4 class="dokumen-title">{{ $informasi->judul }}</h4>
-                                @if($informasi->nomor)
-                                    <p class="dokumen-number">{{ $informasi->nomor }}</p>
-                                @endif
-                                <p class="dokumen-date">
-                                    <i class="bi bi-calendar3"></i>
-                                    {{ $informasi->tanggal_terbit ? \Carbon\Carbon::parse($informasi->tanggal_terbit)->format('d M Y') : $informasi->created_at->format('d M Y') }}
-                                </p>
-                            </div>
-                            <div class="dokumen-actions">
-                                <a href="{{ route('landing.informasi.detail', [$kategoriInfo->slug, $informasi->id]) }}" class="dokumen-btn view">
-                                    <i class="bi bi-eye"></i> Lihat
-                                </a>
-                                @if($informasi->file_path)
-                                    <a href="{{ route('landing.informasi.download', [$kategoriInfo->slug, $informasi->id]) }}" class="dokumen-btn download">
-                                        <i class="bi bi-download"></i> Unduh
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
+            <!-- Filter dan Pencarian -->
+            <div class="table-controls mb-4" data-aos="fade-up">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label fw-medium">
+                            <i class="bi bi-search me-1"></i> Pencarian
+                        </label>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Cari judul dokumen...">
                     </div>
-                @endforeach
+                    <div class="col-md-3">
+                        <label class="form-label fw-medium">
+                            <i class="bi bi-funnel me-1"></i> Jenis Dokumen
+                        </label>
+                        <select id="filterJenis" class="form-select">
+                            <option value="">Semua Jenis</option>
+                            @php
+                                $jenisOptions = $informasis->pluck('jenisDokumen.nama')->unique()->filter()->sort();
+                            @endphp
+                            @foreach($jenisOptions as $jenis)
+                                <option value="{{ $jenis }}">{{ $jenis }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-medium">
+                            <i class="bi bi-calendar-range me-1"></i> Tahun
+                        </label>
+                        <select id="filterTahun" class="form-select">
+                            <option value="">Semua Tahun</option>
+                            @php
+                                $years = $informasis->map(function($item) {
+                                    return $item->tanggal ? \Carbon\Carbon::parse($item->tanggal)->year : $item->created_at->year;
+                                })->unique()->sort()->reverse();
+                            @endphp
+                            @foreach($years as $year)
+                                <option value="{{ $year }}">{{ $year }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" id="resetFilter" class="btn btn-outline-secondary w-100">
+                            <i class="bi bi-arrow-clockwise me-1"></i> Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabel Dokumen -->
+            <div class="table-responsive" data-aos="fade-up">
+                <table class="table table-hover dokumen-table" id="dokumenTable">
+                    <thead>
+                        <tr>
+                            <th width="5%">No</th>
+                            <th width="35%">Judul Dokumen</th>
+                            <th width="15%">Jenis</th>
+                            <th width="15%">Nomor</th>
+                            <th width="12%">Tanggal</th>
+                            <th width="18%" class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($informasis as $index => $informasi)
+                        <tr data-jenis="{{ $informasi->jenisDokumen->nama ?? '' }}"
+                            data-tahun="{{ $informasi->tanggal ? \Carbon\Carbon::parse($informasi->tanggal)->year : $informasi->created_at->year }}"
+                            data-search="{{ strtolower($informasi->judul . ' ' . ($informasi->nomor ?? '') . ' ' . ($informasi->jenisDokumen->nama ?? '')) }}">
+                            <td class="text-center">{{ $informasis->firstItem() + $index }}</td>
+                            <td>
+                                <div class="d-flex align-items-start gap-2">
+                                    <div class="doc-icon-small">
+                                        @if($informasi->jenisDokumen)
+                                            @php
+                                                $icon = match(strtolower($informasi->jenisDokumen->nama)) {
+                                                    'lkpj (laporan penyelenggaraan pemerintah daerah)', 'laporan' => 'bi-file-earmark-text',
+                                                    'spm (standar pelayanan minimal)' => 'bi-list-check',
+                                                    'keputusan bupati', 'peraturan bupati', 'peraturan daerah' => 'bi-journal-bookmark',
+                                                    'nota kesepakatan (mou)', 'perjanjian kerja sama (pks)', 'kesepakatan bersama' => 'bi-file-earmark-medical',
+                                                    default => 'bi-file-earmark-pdf'
+                                                };
+                                            @endphp
+                                            <i class="bi {{ $icon }}"></i>
+                                        @else
+                                            <i class="bi bi-file-earmark-pdf"></i>
+                                        @endif
+                                    </div>
+                                    <div>
+                                        <div class="fw-medium">{{ $informasi->judul }}</div>
+                                        @if($informasi->keterangan)
+                                            <small class="text-muted">{{ Str::limit($informasi->keterangan, 60) }}</small>
+                                        @endif
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                @if($informasi->jenisDokumen)
+                                    <span class="badge-jenis">{{ $informasi->jenisDokumen->nama }}</span>
+                                @else
+                                    <span class="text-muted">-</span>
+                                @endif
+                            </td>
+                            <td>
+                                <small class="text-muted">{{ $informasi->nomor ?? '-' }}</small>
+                            </td>
+                            <td>
+                                <small>{{ $informasi->tanggal ? \Carbon\Carbon::parse($informasi->tanggal)->format('d M Y') : $informasi->created_at->format('d M Y') }}</small>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2 justify-content-center">
+                                    <a href="{{ route('landing.informasi.detail', [$kategoriInfo->slug, $informasi->id]) }}"
+                                       class="btn-action btn-view" title="Lihat Detail">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    @if($informasi->file_dokumen)
+                                        <a href="{{ route('landing.informasi.download', [$kategoriInfo->slug, $informasi->id]) }}"
+                                           class="btn-action btn-download" title="Unduh Dokumen">
+                                            <i class="bi bi-download"></i>
+                                        </a>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- No Results Message -->
+            <div id="noResults" class="text-center py-5" style="display: none;">
+                <i class="bi bi-search text-muted" style="font-size: 64px;"></i>
+                <h4 class="mt-3">Tidak Ada Hasil</h4>
+                <p class="text-muted">Tidak ada dokumen yang sesuai dengan filter yang dipilih</p>
             </div>
 
             <!-- Pagination -->
             @if($informasis->hasPages())
-                <div class="d-flex justify-content-center mt-5" data-aos="fade-up">
+                <div class="d-flex justify-content-center mt-4" data-aos="fade-up">
                     <nav class="pagination-wrapper">
                         {{ $informasis->links() }}
                     </nav>
@@ -399,4 +482,66 @@
         }
     }
 </style>
+@endpush
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchInput');
+        const filterJenis = document.getElementById('filterJenis');
+        const filterTahun = document.getElementById('filterTahun');
+        const resetButton = document.getElementById('resetFilter');
+        const tableRows = document.querySelectorAll('#dokumenTable tbody tr');
+        const noResults = document.getElementById('noResults');
+        const tableContainer = document.querySelector('.table-responsive');
+
+        // Filter function
+        function filterTable() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const selectedJenis = filterJenis.value;
+            const selectedTahun = filterTahun.value;
+            let visibleCount = 0;
+
+            tableRows.forEach(row => {
+                const searchData = row.getAttribute('data-search');
+                const jenis = row.getAttribute('data-jenis');
+                const tahun = row.getAttribute('data-tahun');
+
+                const matchSearch = searchData.includes(searchTerm);
+                const matchJenis = !selectedJenis || jenis === selectedJenis;
+                const matchTahun = !selectedTahun || tahun === selectedTahun;
+
+                if (matchSearch && matchJenis && matchTahun) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Show/hide no results message
+            if (visibleCount === 0) {
+                tableContainer.style.display = 'none';
+                noResults.style.display = 'block';
+            } else {
+                tableContainer.style.display = 'block';
+                noResults.style.display = 'none';
+            }
+        }
+
+        // Reset function
+        function resetFilters() {
+            searchInput.value = '';
+            filterJenis.selectedIndex = 0;
+            filterTahun.selectedIndex = 0;
+            filterTable();
+        }
+
+        // Event listeners
+        searchInput.addEventListener('input', filterTable);
+        filterJenis.addEventListener('change', filterTable);
+        filterTahun.addEventListener('change', filterTable);
+        resetButton.addEventListener('click', resetFilters);
+    });
+</script>
 @endpush
